@@ -454,10 +454,17 @@
                     <!-- Badge & Likes -->
                     <div class="flex items-center justify-between mb-4">
                         <span id="modal-badge" class="px-3 py-1 text-[10px] font-bold tracking-widest text-onyx bg-luxuryGold rounded-full uppercase">CHIC</span>
-                        <button id="modal-like-btn" onclick="modalLikeHandler()" class="text-xs text-rose-500 border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 px-3 py-1 rounded-full transition-all flex items-center space-x-1.5">
-                            <i class="fa-solid fa-heart animate-pulse"></i>
-                            <span id="modal-like-count">0</span>
-                        </button>
+                        <div class="flex items-center space-x-2">
+                            <button id="modal-like-btn" onclick="modalLikeHandler()" class="text-xs text-rose-500 border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 px-3 py-1 rounded-full transition-all flex items-center space-x-1.5">
+                                <i class="fa-solid fa-heart animate-pulse"></i>
+                                <span id="modal-like-count">0</span>
+                            </button>
+                            <!-- Elegant Delete Button -->
+                            <button id="modal-delete-btn" onclick="deleteCurrentItem()" class="text-xs text-red-500 border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 px-3 py-1 rounded-full transition-all flex items-center space-x-1.5">
+                                <i class="fa-solid fa-trash-can"></i>
+                                <span>삭제</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Name -->
@@ -1131,6 +1138,52 @@
             const modal = document.getElementById('detail-modal');
             modal.classList.add('hidden');
             document.getElementById('cheer-input').value = '';
+            resetDeleteBtn();
+        }
+
+        let deleteConfirmState = false;
+
+        function deleteCurrentItem() {
+            if(!currentModalItemId) return;
+            
+            const deleteBtn = document.getElementById('modal-delete-btn');
+            if (!deleteConfirmState) {
+                // Step 1: Trigger confirmation warning state
+                deleteConfirmState = true;
+                deleteBtn.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> <span>진짜 삭제?</span>`;
+                deleteBtn.className = "text-xs text-onyx bg-red-500 border border-red-600 px-3 py-1 rounded-full transition-all flex items-center space-x-1.5 font-bold";
+                
+                // Auto-revert safety timeout (3 seconds)
+                setTimeout(() => {
+                    resetDeleteBtn();
+                }, 3000);
+            } else {
+                // Step 2: Confirmed, perform deletion from local storage
+                items = items.filter(item => item.id !== currentModalItemId);
+                localStorage.setItem('aura_items', JSON.stringify(items));
+                
+                // UI refresh
+                closeDetailModal();
+                renderFilters();
+                renderGallery();
+                updateStats();
+                
+                // Red dynamic fireworks feedback
+                confetti({
+                    particleCount: 30,
+                    spread: 60,
+                    colors: ['#EF4444', '#C5A880']
+                });
+            }
+        }
+
+        function resetDeleteBtn() {
+            deleteConfirmState = false;
+            const deleteBtn = document.getElementById('modal-delete-btn');
+            if (deleteBtn) {
+                deleteBtn.innerHTML = `<i class="fa-solid fa-trash-can"></i> <span>삭제</span>`;
+                deleteBtn.className = "text-xs text-red-500 border border-red-500/20 bg-red-500/5 hover:bg-red-500/10 px-3 py-1 rounded-full transition-all flex items-center space-x-1.5";
+            }
         }
 
         function modalLikeHandler() {
