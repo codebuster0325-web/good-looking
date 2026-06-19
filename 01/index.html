@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EUNHYUK - The Dancing Jewel of Super Junior</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom Google Fonts (Inter & Noto Sans KR) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons for premium style -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sapphire: {
+                            50: '#f0f5ff',
+                            100: '#e0ecff',
+                            200: '#bad6ff',
+                            300: '#7cb1ff',
+                            400: '#3888ff',
+                            500: '#0c5cff',
+                            600: '#003fdb',
+                            700: '#0030a8',
+                            800: '#002585',
+                            900: '#00195e',
+                            950: '#000c36', // Pearl Sapphire Blue tone
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Noto Sans KR', 'Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Noto Sans KR', 'Inter', sans-serif;
+            background-color: #030712; /* Dark background */
+            color: #f3f4f6;
+            overflow-x: hidden;
+        }
+        
+        /* Sapphire Glow Effects */
+        .glow-sapphire {
+            box-shadow: 0 0 30px rgba(0, 63, 219, 0.4);
+        }
+        .text-glow-sapphire {
+            text-shadow: 0 0 15px rgba(124, 177, 255, 0.6);
+        }
+        
+        /* Customized Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #030712;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #002585;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #0c5cff;
+        }
+        
+        /* Keyframe Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 8s ease-in-out infinite;
+        }
+        
+        /* Smooth transition for active tab content */
+        .tab-content {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .tab-content.hidden-tab {
+            opacity: 0;
+            transform: translateY(10px);
+            pointer-events: none;
+            position: absolute;
+        }
+    </style>
+</head>
+<body class="relative">
+
+    <!-- Interactive Sapphire Background Canvas -->
+    <canvas id="sapphireCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+
+    <!-- Navigation Bar -->
+    <nav class="fixed top-0 left-0 w-full z-50 bg-gray-950/70 backdrop-blur-md border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 sm:h-20">
+                <div class="flex items-center space-x-3">
+                    <span class="text-xl sm:text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-sapphire-300 to-sapphire-400 text-glow-sapphire">
+                        EUNHYUK
+                    </span>
+                    <span class="hidden md:inline-block px-2 py-0.5 text-xs font-bold uppercase tracking-wider bg-sapphire-600 rounded-full text-white">
+                        Super Junior
+                    </span>
+                </div>
+                <!-- Desktop Nav Items -->
+                <div class="hidden md:flex space-x-8 text-sm font-medium">
+                    <a href="#about" class="text-gray-300 hover:text-sapphire-400 transition-colors duration-200">은혁이란 누구인가</a>
+                    <a href="#superjunior" class="text-gray-300 hover:text-sapphire-400 transition-colors duration-200">슈퍼주니어 연대기</a>
+                    <a href="#de" class="text-gray-300 hover:text-sapphire-400 transition-colors duration-200">슈퍼주니어 D&E</a>
+                    <a href="#cheering" class="text-gray-300 hover:text-sapphire-400 transition-colors duration-200">응원 메시지</a>
+                </div>
+                <!-- Mobile Nav Toggle button -->
+                <div class="md:hidden">
+                    <button id="mobileMenuBtn" class="p-2 rounded-md text-gray-400 hover:text-white focus:outline-none">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-gray-950/95 border-b border-white/10 px-4 pt-2 pb-4 space-y-3">
+            <a href="#about" onclick="toggleMenu()" class="block text-gray-300 hover:text-sapphire-400 transition-colors duration-200 text-base py-2 border-b border-white/5">은혁이란 누구인가</a>
+            <a href="#superjunior" onclick="toggleMenu()" class="block text-gray-300 hover:text-sapphire-400 transition-colors duration-200 text-base py-2 border-b border-white/5">슈퍼주니어 연대기</a>
+            <a href="#de" onclick="toggleMenu()" class="block text-gray-300 hover:text-sapphire-400 transition-colors duration-200 text-base py-2 border-b border-white/5">슈퍼주니어 D&E</a>
+            <a href="#cheering" onclick="toggleMenu()" class="block text-gray-300 hover:text-sapphire-400 transition-colors duration-200 text-base py-2">응원 메시지</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 z-10">
+        <div class="absolute top-1/4 left-1/4 w-72 h-72 rounded-full bg-sapphire-700/20 blur-[100px] animate-pulse-slow"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-sapphire-500/20 blur-[130px] animate-pulse-slow"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+            
+            <!-- Hero Left Side -->
+            <div class="lg:col-span-5 flex justify-center order-2 lg:order-1">
+                <div class="relative w-72 h-96 sm:w-80 sm:h-[450px] md:w-96 md:h-[500px] rounded-2xl overflow-hidden shadow-2xl transition-all duration-500 hover:scale-105 border border-white/10 group">
+                    <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-sapphire-950/70 to-transparent z-10"></div>
+                    <div class="absolute inset-0 flex flex-col justify-end p-8 z-20">
+                        <span class="text-xs font-bold tracking-widest text-sapphire-400 uppercase mb-2">Main Dancer & Concert Director</span>
+                        <h2 class="text-2xl sm:text-3xl font-black text-white leading-tight">이혁재<br><span class="text-lg font-light tracking-wide text-gray-300">Lee Hyuk Jae</span></h2>
+                        <div class="h-1 w-12 bg-sapphire-500 my-4 group-hover:w-full transition-all duration-500"></div>
+                        <p class="text-xs sm:text-sm text-gray-300 line-clamp-2">"무대 위의 은혁은 세상에서 가장 빛나는 푸른 보석과도 같다."</p>
+                    </div>
+                    
+                    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-sapphire-900 to-gray-950">
+                        <svg class="w-48 h-48 text-sapphire-500/30 group-hover:scale-110 transition-transform duration-700" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M100 20 C100 20, 140 70, 140 100 C140 130, 100 170, 100 170 C100 170, 60 130, 60 100 C60 70, 100 20, 100 20Z" fill="url(#sapphireGradient)" class="opacity-60" />
+                            <circle cx="100" cy="80" r="15" fill="#7cb1ff" />
+                            <path d="M80 110 Q100 130 120 110" stroke="#7cb1ff" stroke-width="4" stroke-linecap="round"/>
+                            <defs>
+                                <radialGradient id="sapphireGradient" cx="50%" cy="50%" r="50%">
+                                    <stop offset="0%" stop-color="#0c5cff" />
+                                    <stop offset="100%" stop-color="#00195e" />
+                                </radialGradient>
+                            </defs>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Right Side -->
+            <div class="lg:col-span-7 flex flex-col space-y-6 text-center lg:text-left order-1 lg:order-2">
+                <div class="inline-flex self-center lg:self-start items-center space-x-2 bg-sapphire-950/80 border border-sapphire-800/60 px-4 py-2 rounded-full backdrop-blur-sm">
+                    <span class="w-2.5 h-2.5 bg-sapphire-400 rounded-full animate-pulse"></span>
+                    <span class="text-xs sm:text-sm text-sapphire-300 font-semibold tracking-wider">Super Junior 은혁 데뷔 20주년 기념 헌정 페이지</span>
+                </div>
+                
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white leading-tight">
+                    무대 위의 독보적 페르소나, <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-sapphire-300 via-sapphire-400 to-blue-500 text-glow-sapphire">은혁(EUNHYUK)</span>
+                </h1>
+                
+                <p class="text-base sm:text-lg text-gray-300 font-light leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                    아시아 No.1 멀티테이너 그룹 슈퍼주니어의 메인 댄서이자 랩퍼, 그리고 역대 '슈퍼쇼(Super Show)'를 총괄 연출해온 최고의 콘서트 디렉터. 은혁의 찬란한 기록과 그가 동해와 함께 이룩한 유닛 'D&E'의 세계를 소개합니다.
+                </p>
+
+                <div class="grid grid-cols-3 gap-4 max-w-md mx-auto lg:mx-0 pt-4">
+                    <div class="bg-gray-900/40 border border-white/5 rounded-xl p-4 text-center backdrop-blur-sm hover:border-sapphire-500/40 transition-all">
+                        <span class="block text-2xl sm:text-3xl font-bold text-sapphire-400">2005</span>
+                        <span class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider">Debut Year</span>
+                    </div>
+                    <div class="bg-gray-900/40 border border-white/5 rounded-xl p-4 text-center backdrop-blur-sm hover:border-sapphire-500/40 transition-all">
+                        <span class="block text-2xl sm:text-3xl font-bold text-sapphire-400">No.1</span>
+                        <span class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider">Main Dancer</span>
+                    </div>
+                    <div class="bg-gray-900/40 border border-white/5 rounded-xl p-4 text-center backdrop-blur-sm hover:border-sapphire-500/40 transition-all">
+                        <span class="block text-2xl sm:text-3xl font-bold text-sapphire-400">100+</span>
+                        <span class="text-[10px] sm:text-xs text-gray-400 uppercase tracking-wider">Directing Concerts</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-6">
+                    <a href="#about" class="px-8 py-4 bg-sapphire-600 hover:bg-sapphire-500 text-white font-semibold rounded-full shadow-lg transition-all duration-300 text-center hover:scale-105 active:scale-95 glow-sapphire">
+                        은혁 스토리 보기
+                    </a>
+                    <a href="#de" class="px-8 py-4 bg-gray-900/80 hover:bg-gray-800 text-gray-300 font-semibold rounded-full border border-white/10 transition-all duration-300 text-center hover:scale-105 active:scale-95">
+                        D&E 유닛 만나기
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+        <div class="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-gray-950 to-transparent"></div>
+    </header>
+
+    <!-- Section 1: Eunhyuk Profile -->
+    <section id="about" class="relative py-24 sm:py-32 z-10 bg-gray-950">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
+                <h2 class="text-xs font-bold tracking-widest text-sapphire-400 uppercase mb-3">WHO IS EUNHYUK?</h2>
+                <h3 class="text-3xl sm:text-4xl font-extrabold text-white">춤추는 보석, 은혁이란 누구인가</h3>
+                <p class="mt-4 text-base sm:text-lg text-gray-400 font-light">
+                    독보적인 댄스 실력과 타고난 무대 장악력, 무대 아래에서의 인간적이고 유쾌한 매력까지. 은혁의 정의하는 다채로운 키워드를 탐구합니다.
+                </p>
+            </div>
+
+            <!-- Profile Cards Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-gradient-to-b from-gray-900/80 to-gray-950 border border-white/5 rounded-2xl p-8 hover:border-sapphire-500/50 transition-all duration-300 group hover:-translate-y-2">
+                    <div class="w-12 h-12 rounded-xl bg-sapphire-950 flex items-center justify-center text-sapphire-400 text-xl font-bold mb-6 group-hover:bg-sapphire-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-child"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">독보적인 '메인 댄서'</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        슈퍼주니어 전체 퍼포먼스의 굳건한 축입니다. 정교하면서도 폭발적인 표현력, 박자 쪼개기 실력은 K-POP 역사상 최정상급 댄서로 꼽히게 만듭니다. 데뷔 전부터 댄스 안무 구성에 활발히 참여해 왔으며, 슈퍼주니어 안무의 정체성을 구성하는 장본인입니다.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-gradient-to-b from-gray-900/80 to-gray-950 border border-white/5 rounded-2xl p-8 hover:border-sapphire-500/50 transition-all duration-300 group hover:-translate-y-2">
+                    <div class="w-12 h-12 rounded-xl bg-sapphire-950 flex items-center justify-center text-sapphire-400 text-xl font-bold mb-6 group-hover:bg-sapphire-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-sliders"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">공연 기획자 '콘서트 디렉터'</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        전 세계 음악팬들을 열광시킨 독보적인 라이브 월드 투어 브랜드, '슈퍼쇼(Super Show)'의 연출을 총괄하며 아티스트를 넘어 무대 연출가로 활약합니다. 무대의 동선, LED 연출, 셋리스트 구성까지 무대 위 디렉터로서의 놀라운 음악적 스펙트럼과 영리함을 자랑합니다.
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-gradient-to-b from-gray-900/80 to-gray-950 border border-white/5 rounded-2xl p-8 hover:border-sapphire-500/50 transition-all duration-300 group hover:-translate-y-2">
+                    <div class="w-12 h-12 rounded-xl bg-sapphire-950 flex items-center justify-center text-sapphire-400 text-xl font-bold mb-6 group-hover:bg-sapphire-600 group-hover:text-white transition-all duration-300">
+                        <i class="fas fa-icons"></i>
+                    </div>
+                    <h4 class="text-xl font-bold text-white mb-3">유쾌한 만능 엔터테이너</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        뛰어난 순발력과 남다른 예능감으로 '라디오 스타', '강심장', '아는 형님' 등 다수의 지상파 및 케이블 메이저 예능에서 독보적 존재감을 증명해 왔습니다. 가벼운 입담 속에 깊은 배려심과 진정성 있는 인성을 겸비하여 대중적 신뢰와 사랑을 두루 얻고 있습니다.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Interactive Biography Details with Tabs -->
+            <div class="mt-16 bg-gradient-to-r from-gray-900 via-sapphire-950/40 to-gray-900 rounded-3xl p-8 sm:p-12 border border-white/5 shadow-2xl">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    
+                    <div class="lg:col-span-5 flex flex-col space-y-4">
+                        <div class="flex items-center space-x-2 text-sapphire-400">
+                            <span class="h-[1px] w-6 bg-sapphire-400"></span>
+                            <span class="text-sm font-bold uppercase tracking-widest">Eunhyuk's Profile Info</span>
+                        </div>
+                        <h4 class="text-2xl sm:text-3xl font-extrabold text-white">보석 미남 은혁의 프로필</h4>
+                        <p class="text-gray-400 text-sm leading-relaxed">
+                            별명인 '보석미남'에 걸맞게 빛나는 재능과 팬에 대한 사랑으로 가득 찬 이혁재 아티스트의 정보입니다.
+                        </p>
+                        
+                        <div class="flex flex-col space-y-2 pt-4">
+                            <button onclick="switchProfileTab('basic')" id="tabBtn-basic" class="flex items-center justify-between p-3 rounded-xl bg-sapphire-900/40 border border-sapphire-700/50 text-white text-sm font-semibold transition-all">
+                                <span>인물 정보 (이름/탄생/취미)</span>
+                                <i class="fas fa-chevron-right text-xs"></i>
+                            </button>
+                            <button onclick="switchProfileTab('nick')" id="tabBtn-nick" class="flex items-center justify-between p-3 rounded-xl hover:bg-sapphire-950/30 border border-white/5 text-gray-400 text-sm transition-all">
+                                <span>은혁의 유니크한 별명(Nickname)</span>
+                                <i class="fas fa-chevron-right text-xs"></i>
+                            </button>
+                            <button onclick="switchProfileTab('talent')" id="tabBtn-talent" class="flex items-center justify-between p-3 rounded-xl hover:bg-sapphire-950/30 border border-white/5 text-gray-400 text-sm transition-all">
+                                <span>핵심 능력치 (춤/랩/예능)</span>
+                                <i class="fas fa-chevron-right text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="lg:col-span-7 relative bg-gray-950/60 rounded-2xl p-6 sm:p-8 border border-white/5 min-h-[300px] flex items-center">
+                        <!-- Tab 1: Basic -->
+                        <div id="tabContent-basic" class="tab-content w-full space-y-4">
+                            <h5 class="text-lg font-bold text-sapphire-300">이혁재 (李赫宰) - 아티스트 은혁</h5>
+                            <div class="grid grid-cols-2 gap-4 text-sm pt-2">
+                                <div class="bg-white/5 p-3 rounded-xl">
+                                    <span class="block text-gray-400 text-xs mb-1">생년월일</span>
+                                    <span class="font-semibold text-white">1986년 4월 4일 (경기도 고양시)</span>
+                                </div>
+                                <div class="bg-white/5 p-3 rounded-xl">
+                                    <span class="block text-gray-400 text-xs mb-1">신체 스펙</span>
+                                    <span class="font-semibold text-white">176cm, O형, 완벽한 슬렌더 핏</span>
+                                </div>
+                                <div class="bg-white/5 p-3 rounded-xl">
+                                    <span class="block text-gray-400 text-xs mb-1">포지션</span>
+                                    <span class="font-semibold text-white">메인댄서, 메인래퍼, 서브보컬</span>
+                                </div>
+                                <div class="bg-white/5 p-3 rounded-xl">
+                                    <span class="block text-gray-400 text-xs mb-1">소속사</span>
+                                    <span class="font-semibold text-white">ODE 엔터테인먼트 (공동대표)</span>
+                                </div>
+                            </div>
+                            <p class="text-xs sm:text-sm text-gray-400 italic pt-2">"그는 단지 춤을 잘 추는 사람이 아니다. 무대를 온전한 자신의 것으로 만드는 아우라를 가졌다."</p>
+                        </div>
+
+                        <!-- Tab 2: Nicknames -->
+                        <div id="tabContent-nick" class="tab-content w-full space-y-4 hidden-tab">
+                            <h5 class="text-lg font-bold text-sapphire-300">팬들과 함께 만든 친밀한 별명들</h5>
+                            <div class="space-y-3">
+                                <div class="flex items-start space-x-3">
+                                    <span class="px-2 py-0.5 text-xs bg-sapphire-900 rounded font-semibold text-white mt-1">보석미남</span>
+                                    <p class="text-sm text-gray-300">"세상에서 가장 빛나는 소중한 보석"이라는 의미로, 무대 위에서 최고의 비주얼과 존재감으로 불리는 시그니처 네임.</p>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <span class="px-2 py-0.5 text-xs bg-sapphire-900 rounded font-semibold text-white mt-1">멸치</span>
+                                    <p class="text-sm text-gray-300">귀엽고 슬림한 슬렌더 몸매와 유머러스함이 결합하여 생긴 대중적이고 친근감 넘치는 은혁만의 시그니처 닉네임.</p>
+                                </div>
+                                <div class="flex items-start space-x-3">
+                                    <span class="px-2 py-0.5 text-xs bg-sapphire-900 rounded font-semibold text-white mt-1">댄싱머신</span>
+                                    <p class="text-sm text-gray-300">어떤 음악이 나와도 그만의 느낌으로 즉석 스트릿 댄스를 만들어내는 타고난 독보적 춤 실력을 입증하는 찬사.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tab 3: Talent Metrics -->
+                        <div id="tabContent-talent" class="tab-content w-full space-y-4 hidden-tab">
+                            <h5 class="text-lg font-bold text-sapphire-300">은혁의 3대 핵심 아티스트 역량</h5>
+                            <div class="space-y-3 pt-2">
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-gray-400 mb-1">
+                                        <span>댄스 & 안무 메이킹 (Dance & Choreo)</span>
+                                        <span class="text-sapphire-400">100%</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-sapphire-500 rounded-full" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-gray-400 mb-1">
+                                        <span>무대 연출 및 기획 (Directing & Producing)</span>
+                                        <span class="text-sapphire-400">95%</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-sapphire-500 rounded-full" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs font-semibold text-gray-400 mb-1">
+                                        <span>예능 & 스피치 (Variety Skill & Speech)</span>
+                                        <span class="text-sapphire-400">92%</span>
+                                    </div>
+                                    <div class="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                                        <div class="h-full bg-sapphire-500 rounded-full" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Section 2: Super Junior's Development Timeline -->
+    <section id="superjunior" class="relative py-24 sm:py-32 bg-gray-950/90 z-10">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-sapphire-950/20 to-transparent"></div>
+        
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="text-center max-w-3xl mx-auto mb-16 sm:mb-24">
+                <h2 class="text-xs font-bold tracking-widest text-sapphire-400 uppercase mb-3">SUPER JUNIOR HISTORY</h2>
+                <h3 class="text-3xl sm:text-4xl font-extrabold text-white">글로벌 제왕, 슈퍼주니어의 눈부신 발전 과정</h3>
+                <p class="mt-4 text-base sm:text-lg text-gray-400 font-light">
+                    로테이션 그룹에서 글로벌 레전드로 도약하기까지, 은혁의 중심축 역할과 함께 슈퍼주니어가 걸어온 영광의 역사와 혁신입니다.
+                </p>
+            </div>
+
+            <!-- Modern Interactive Timeline -->
+            <div class="relative border-l border-sapphire-800/60 ml-4 sm:ml-10 md:mx-auto md:max-w-4xl">
+                
+                <!-- Event 1 -->
+                <div class="mb-12 md:mb-16 relative pl-8 sm:pl-12 md:pl-0 md:flex md:justify-between items-center group">
+                    <div class="absolute left-0 top-1 md:left-1/2 md:-translate-x-1/2 w-6 h-6 rounded-full bg-gray-950 border-4 border-sapphire-500 z-10 group-hover:bg-sapphire-400 transition-colors"></div>
+                    <div class="md:w-[45%] md:text-right md:pr-8">
+                        <span class="inline-block px-3 py-1 rounded-full bg-sapphire-950 border border-sapphire-700 text-xs font-bold text-sapphire-300 mb-2">2005</span>
+                        <h4 class="text-xl font-bold text-white mb-2">슈퍼주니어 05의 역사적 태동</h4>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            동방신기의 돌풍에 이어 SM엔터테인먼트가 기획한 최초의 '아시아 등용문' 성격의 로테이션 그룹 '슈퍼주니어 05'로 화려하게 데뷔했습니다. 싱글 'Twins (Knock Out)'을 발매하고, 은혁을 비롯한 멤버들의 뛰어난 비주얼과 신선함으로 돌풍을 일으켰습니다.
+                        </p>
+                    </div>
+                    <div class="hidden md:block md:w-[45%]"></div>
+                </div>
+
+                <!-- Event 2 -->
+                <div class="mb-12 md:mb-16 relative pl-8 sm:pl-12 md:pl-0 md:flex md:justify-between items-center group">
+                    <div class="absolute left-0 top-1 md:left-1/2 md:-translate-x-1/2 w-6 h-6 rounded-full bg-gray-950 border-4 border-sapphire-500 z-10 group-hover:bg-sapphire-400 transition-colors"></div>
+                    <div class="hidden md:block md:w-[45%]"></div>
+                    <div class="md:w-[45%] md:pl-8">
+                        <span class="inline-block px-3 py-1 rounded-full bg-sapphire-950 border border-sapphire-700 text-xs font-bold text-sapphire-300 mb-2">2006</span>
+                        <h4 class="text-xl font-bold text-white mb-2">정식 그룹 선언 및 메가히트 'U'</h4>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            막내 규현의 영입을 기점으로 로테이션 유닛 구조를 전격 폐지하고, 전 세계에 유례없던 초대형 상설 보이밴드 '슈퍼주니어'로 거듭났습니다. 그들의 첫 대규모 정식 활동곡 'U'는 공전의 대히트를 치며 음악방송 지상파 첫 1위 달성과 연말 신인상 올킬의 금자탑을 세웠습니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Event 3 -->
+                <div class="mb-12 md:mb-16 relative pl-8 sm:pl-12 md:pl-0 md:flex md:justify-between items-center group">
+                    <div class="absolute left-0 top-1 md:left-1/2 md:-translate-x-1/2 w-6 h-6 rounded-full bg-gray-950 border-4 border-sapphire-500 z-10 group-hover:bg-sapphire-400 transition-colors"></div>
+                    <div class="md:w-[45%] md:text-right md:pr-8">
+                        <span class="inline-block px-3 py-1 rounded-full bg-sapphire-950 border border-sapphire-700 text-xs font-bold text-sapphire-300 mb-2">2009</span>
+                        <h4 class="text-xl font-bold text-white mb-2">'Sorry, Sorry'와 글로벌 K-POP 시대 개막</h4>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            정규 3집 타이틀곡 'Sorry, Sorry'가 공전의 글로벌 신드롬을 몰고 오며 전 아시아권 차트 장기 석권, 골든디스크 시상식 대상 수상을 거머쥐었습니다. 특히 은혁은 댄스브레이크의 센터에서 역동적 무대를 완벽 통제하며 슈퍼주니어를 한류 최고 자리에 앉혔습니다.
+                        </p>
+                    </div>
+                    <div class="hidden md:block md:w-[45%]"></div>
+                </div>
+
+                <!-- Event 4 -->
+                <div class="mb-12 md:mb-16 relative pl-8 sm:pl-12 md:pl-0 md:flex md:justify-between items-center group">
+                    <div class="absolute left-0 top-1 md:left-1/2 md:-translate-x-1/2 w-6 h-6 rounded-full bg-gray-950 border-4 border-sapphire-500 z-10 group-hover:bg-sapphire-400 transition-colors"></div>
+                    <div class="hidden md:block md:w-[45%]"></div>
+                    <div class="md:w-[45%] md:pl-8">
+                        <span class="inline-block px-3 py-1 rounded-full bg-sapphire-950 border border-sapphire-700 text-xs font-bold text-sapphire-300 mb-2">2015</span>
+                        <h4 class="text-xl font-bold text-white mb-2">독자 레이블 'Label SJ' 설립의 혁신</h4>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            데뷔 10주년을 맞아 SM엔터테인먼트 내부 최초로 아티스트 맞춤형 독립 레이블 'Label SJ'를 공식 출범시켰습니다. 음악적 결정권의 자유와 개별/그룹 유닛 활동을 분리해 전폭 지원하여 장수 상생 모델을 개척했습니다.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Event 5 -->
+                <div class="relative pl-8 sm:pl-12 md:pl-0 md:flex md:justify-between items-center group">
+                    <div class="absolute left-0 top-1 md:left-1/2 md:-translate-x-1/2 w-6 h-6 rounded-full bg-gray-950 border-4 border-sapphire-500 z-10 group-hover:bg-sapphire-400 transition-colors"></div>
+                    <div class="md:w-[45%] md:text-right md:pr-8">
+                        <span class="inline-block px-3 py-1 rounded-full bg-sapphire-950 border border-sapphire-700 text-xs font-bold text-sapphire-300 mb-2">현재</span>
+                        <h4 class="text-xl font-bold text-white mb-2">끊임없는 한계 극복, 현재진행형 레전드</h4>
+                        <p class="text-sm text-gray-400 leading-relaxed">
+                            모든 멤버의 군백기를 완벽히 극복하고 단 한 번의 해체 위기 없이 활약하며 20년의 세월을 넘어선 레전드 그룹이 되었습니다. 전 세계 경기장에서 울려 퍼지는 슈퍼쇼(Super Show) 브랜드 가치는 은혁의 환상적인 스테이지 디렉팅과 연출력을 토대로 지금도 계속 진화 중입니다.
+                        </p>
+                    </div>
+                    <div class="hidden md:block md:w-[45%]"></div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 3: Super Junior D&E & Legendary Performance Gallery -->
+    <section id="de" class="relative py-24 sm:py-32 bg-gray-950 z-10 border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+                <h2 class="text-xs font-bold tracking-widest text-sapphire-400 uppercase mb-3">SUPER JUNIOR D&E & DANCE ARCHIVE</h2>
+                <h3 class="text-3xl sm:text-4xl font-extrabold text-white">레전더리 퍼포먼스 & 댄스 비디오</h3>
+                <p class="mt-4 text-base sm:text-lg text-gray-400 font-light">
+                    K-POP 씬의 대표적인 메인 댄서 은혁의 눈부신 춤선과 슈퍼주니어 D&E의 무대를 만나보세요.<br>
+                    카드를 클릭하면 <strong>공식 고화질 안무 및 뮤직비디오 영상</strong>으로 안전하게 바로 이동합니다.
+                </p>
+            </div>
+
+            <!-- Video Grid Layout -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                <!-- Video Card 1: Oppa, Oppa -->
+                <div onclick="openVideo('https://www.youtube.com/watch?v=ueid0f-91ho')" class="group relative bg-gradient-to-b from-gray-900 to-gray-950 border border-white/5 rounded-2xl overflow-hidden cursor-pointer hover:border-sapphire-500/50 hover:shadow-[0_0_30px_rgba(12,92,255,0.25)] transition-all duration-300 transform hover:-translate-y-2">
+                    <!-- Fake Thumbnail Graphic -->
+                    <div class="aspect-video relative bg-gradient-to-br from-sapphire-900 to-gray-950 flex items-center justify-center overflow-hidden">
+                        <div class="absolute inset-0 opacity-40 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-sapphire-600 via-transparent to-transparent"></div>
+                        <i class="fas fa-compact-disc text-sapphire-400/20 text-7xl group-hover:rotate-45 transition-transform duration-700"></i>
+                        
+                        <!-- Overlay Play Button -->
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-80 group-hover:bg-black/20 group-hover:opacity-100 transition-all duration-300">
+                            <div class="w-12 h-12 rounded-full bg-sapphire-600 group-hover:bg-sapphire-500 flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-110 transition-all duration-300">
+                                <i class="fas fa-play ml-1"></i>
+                            </div>
+                        </div>
+                        
+                        <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/80 text-[10px] text-gray-300 font-semibold">03:31</span>
+                        <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-sapphire-950 border border-sapphire-700 text-[10px] text-sapphire-300 font-bold uppercase tracking-wider">D&E DEBUT</span>
+                    </div>
+                    
+                    <div class="p-5 space-y-2">
+                        <h4 class="text-base font-bold text-white group-hover:text-sapphire-300 transition-colors">떴다 오빠 (Oppa, Oppa)</h4>
+                        <p class="text-xs text-gray-400 line-clamp-2">은혁과 동해의 전설적인 복고풍 디스코 퍼포먼스의 화려한 서막을 장식한 안무.</p>
+                        <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-sapphire-400 font-semibold"><i class="fab fa-youtube mr-1"></i>Official MV</span>
+                            <span class="text-[10px] text-gray-500 flex items-center gap-1">보러가기 <i class="fas fa-external-link-alt text-[8px]"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 2: Danger -->
+                <div onclick="openVideo('https://www.youtube.com/watch?v=5672cZAxRMw')" class="group relative bg-gradient-to-b from-gray-900 to-gray-950 border border-white/5 rounded-2xl overflow-hidden cursor-pointer hover:border-sapphire-500/50 hover:shadow-[0_0_30px_rgba(12,92,255,0.25)] transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="aspect-video relative bg-gradient-to-br from-red-950/40 to-gray-950 flex items-center justify-center overflow-hidden">
+                        <div class="absolute inset-0 opacity-40 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-red-800/30 via-transparent to-transparent"></div>
+                        <i class="fas fa-fire text-red-500/10 text-7xl group-hover:scale-110 transition-transform duration-700"></i>
+                        
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-80 group-hover:bg-black/20 group-hover:opacity-100 transition-all duration-300">
+                            <div class="w-12 h-12 rounded-full bg-sapphire-600 group-hover:bg-sapphire-500 flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-110 transition-all duration-300">
+                                <i class="fas fa-play ml-1"></i>
+                            </div>
+                        </div>
+                        
+                        <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/80 text-[10px] text-gray-300 font-semibold">03:25</span>
+                        <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-red-950/80 border border-red-800/60 text-[10px] text-red-400 font-bold uppercase tracking-wider">HARDCORE TRAP</span>
+                    </div>
+                    
+                    <div class="p-5 space-y-2">
+                        <h4 class="text-base font-bold text-white group-hover:text-sapphire-300 transition-colors">땡겨 (Danger)</h4>
+                        <p class="text-xs text-gray-400 line-clamp-2">강렬한 힙합 사운드에 녹아든 다이내믹하고 파괴력 넘치는 칼군무 퍼포먼스.</p>
+                        <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-sapphire-400 font-semibold"><i class="fab fa-youtube mr-1"></i>Official MV</span>
+                            <span class="text-[10px] text-gray-500 flex items-center gap-1">보러가기 <i class="fas fa-external-link-alt text-[8px]"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 3: Growing Pains -->
+                <div onclick="openVideo('https://www.youtube.com/watch?v=Zs2NibgZgR4')" class="group relative bg-gradient-to-b from-gray-900 to-gray-950 border border-white/5 rounded-2xl overflow-hidden cursor-pointer hover:border-sapphire-500/50 hover:shadow-[0_0_30px_rgba(12,92,255,0.25)] transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="aspect-video relative bg-gradient-to-br from-sapphire-950 to-gray-950 flex items-center justify-center overflow-hidden">
+                        <div class="absolute inset-0 opacity-40 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-blue-900/30 via-transparent to-transparent"></div>
+                        <i class="fas fa-tint text-blue-400/20 text-7xl group-hover:-translate-y-1 transition-transform duration-700"></i>
+                        
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-80 group-hover:bg-black/20 group-hover:opacity-100 transition-all duration-300">
+                            <div class="w-12 h-12 rounded-full bg-sapphire-600 group-hover:bg-sapphire-500 flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-110 transition-all duration-300">
+                                <i class="fas fa-play ml-1"></i>
+                            </div>
+                        </div>
+                        
+                        <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/80 text-[10px] text-gray-300 font-semibold">03:42</span>
+                        <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-blue-950 border border-blue-900 text-[10px] text-blue-300 font-bold uppercase tracking-wider">EMOTIONAL LYRICAL</span>
+                    </div>
+                    
+                    <div class="p-5 space-y-2">
+                        <h4 class="text-base font-bold text-white group-hover:text-sapphire-300 transition-colors">너는 나만큼 (Growing Pains)</h4>
+                        <p class="text-xs text-gray-400 line-clamp-2">어쿠스틱 록 발라드 무드에 은혁의 아련하고 애틋한 춤선이 결합된 예술적 무대.</p>
+                        <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-sapphire-400 font-semibold"><i class="fab fa-youtube mr-1"></i>Official MV</span>
+                            <span class="text-[10px] text-gray-500 flex items-center gap-1">보러가기 <i class="fas fa-external-link-alt text-[8px]"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Card 4: Sorry, Sorry -->
+                <div onclick="openVideo('https://www.youtube.com/watch?v=An-TdfN3v6g')" class="group relative bg-gradient-to-b from-gray-900 to-gray-950 border border-white/5 rounded-2xl overflow-hidden cursor-pointer hover:border-sapphire-500/50 hover:shadow-[0_0_30px_rgba(12,92,255,0.25)] transition-all duration-300 transform hover:-translate-y-2">
+                    <div class="aspect-video relative bg-gradient-to-br from-yellow-950/20 to-gray-950 flex items-center justify-center overflow-hidden">
+                        <div class="absolute inset-0 opacity-40 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-600/20 via-transparent to-transparent"></div>
+                        <i class="fas fa-crown text-yellow-500/10 text-7xl group-hover:rotate-12 transition-transform duration-700"></i>
+                        
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-80 group-hover:bg-black/20 group-hover:opacity-100 transition-all duration-300">
+                            <div class="w-12 h-12 rounded-full bg-sapphire-600 group-hover:bg-sapphire-500 flex items-center justify-center text-white text-lg shadow-lg group-hover:scale-110 transition-all duration-300">
+                                <i class="fas fa-play ml-1"></i>
+                            </div>
+                        </div>
+                        
+                        <span class="absolute bottom-2 right-2 px-1.5 py-0.5 rounded bg-black/80 text-[10px] text-gray-300 font-semibold">04:18</span>
+                        <span class="absolute top-2 left-2 px-2 py-0.5 rounded-full bg-yellow-950/60 border border-yellow-800/40 text-[10px] text-yellow-400 font-bold uppercase tracking-wider">K-POP LEGEND</span>
+                    </div>
+                    
+                    <div class="p-5 space-y-2">
+                        <h4 class="text-base font-bold text-white group-hover:text-sapphire-300 transition-colors">Sorry, Sorry (쏘리 쏘리)</h4>
+                        <p class="text-xs text-gray-400 line-clamp-2">은혁이 댄스브레이크의 중앙에서 폭발적인 전율을 선사한 전설의 국가대표 칼군무.</p>
+                        <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                            <span class="text-[10px] text-sapphire-400 font-semibold"><i class="fab fa-youtube mr-1"></i>Performance MV</span>
+                            <span class="text-[10px] text-gray-500 flex items-center gap-1">보러가기 <i class="fas fa-external-link-alt text-[8px]"></i></span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- Direct YouTube Official Channel Card -->
+            <div class="mt-12 p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-sapphire-950/40 via-gray-900 to-sapphire-950/40 border border-white/5 flex flex-col sm:flex-row items-center justify-between gap-6 hover:border-sapphire-500/30 transition-all duration-300">
+                <div class="flex items-center space-x-4">
+                    <div class="w-12 h-12 rounded-full bg-red-600/10 flex items-center justify-center text-red-500 text-xl border border-red-500/20">
+                        <i class="fab fa-youtube"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-base sm:text-lg">Super Junior Official YouTube Channel</h4>
+                        <p class="text-xs sm:text-sm text-gray-400">더 많은 은혁의 고품격 댄스 영상과 슈퍼주니어의 전체 무대를 감상해보세요.</p>
+                    </div>
+                </div>
+                <a href="https://www.youtube.com/@superjunior" target="_blank" class="px-6 py-3 bg-red-600 hover:bg-red-500 text-white font-semibold text-xs sm:text-sm rounded-full transition-all duration-300 shadow-lg hover:scale-105 active:scale-95 flex items-center space-x-2">
+                    <span>공식 채널 바로가기</span>
+                    <i class="fas fa-external-link-alt text-[10px]"></i>
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Section 4: Fan Cheering / Lightstick Interaction Section -->
+    <section id="cheering" class="relative py-24 bg-gradient-to-b from-gray-950 to-gray-950/95 z-10 border-t border-white/5 overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-sapphire-600/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+            <h2 class="text-xs font-bold tracking-widest text-sapphire-400 uppercase mb-3">SAPPHIRE BLUE OCEAN</h2>
+            <h3 class="text-3xl sm:text-4xl font-extrabold text-white">사파이어 블루의 물결에 동참하세요</h3>
+            <p class="mt-4 text-base sm:text-lg text-gray-400 font-light max-w-2xl mx-auto">
+                은혁과 슈퍼주니어 D&E에게 보내는 응원 메시지를 작성해 보세요. <br>
+                화면을 클릭하여 펄 사파이어 블루 야광봉 응원봉 효과를 만들어 보세요!
+            </p>
+
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-2 gap-12 items-center text-left max-w-5xl mx-auto">
+                
+                <!-- Fan input message board -->
+                <div class="bg-gray-900/50 backdrop-blur-md border border-white/10 rounded-2xl p-6 sm:p-8 space-y-4">
+                    <h4 class="text-lg font-bold text-white mb-2"><i class="fas fa-edit text-sapphire-400 mr-2"></i>은혁에게 마음을 전하세요</h4>
+                    
+                    <div class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">작성자 닉네임</label>
+                            <input type="text" id="cheerName" placeholder="파란물결 엘프" class="w-full bg-gray-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sapphire-500 transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">응원 메시지</label>
+                            <textarea id="cheerMessage" rows="3" placeholder="평생 함께 춤추고 달릴게! 은혁아 늘 응원해!" class="w-full bg-gray-950 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-sapphire-500 transition-colors resize-none"></textarea>
+                        </div>
+                        <button onclick="addCheerMessage()" class="w-full py-3 bg-sapphire-600 hover:bg-sapphire-500 text-white font-semibold text-sm rounded-xl transition-all duration-300 shadow-md flex items-center justify-center space-x-2">
+                            <i class="fas fa-paper-plane"></i>
+                            <span>응원 전송하기</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Realtime Message Stream Board -->
+                <div class="bg-gray-900/30 border border-white/5 rounded-2xl p-6 h-[340px] flex flex-col">
+                    <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider"><i class="fas fa-comments text-sapphire-400 mr-2"></i>실시간 엘프들의 목소리</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 bg-sapphire-900 text-sapphire-300 rounded-full">Live Feed</span>
+                    </div>
+                    
+                    <div id="cheerFeed" class="flex-1 overflow-y-auto space-y-3 pr-2 text-sm">
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-bold text-sapphire-300 text-xs">사파이어엘프</span>
+                                <span class="text-[10px] text-gray-500">방금 전</span>
+                            </div>
+                            <p class="text-gray-300 text-xs">은혁아, 무대 위에서 최고의 댄서이자 빛나는 별! 오랫동안 춤추는 모습 보고 싶어!</p>
+                        </div>
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-bold text-sapphire-300 text-xs">HyukHaeLover</span>
+                                <span class="text-[10px] text-gray-500">1분 전</span>
+                            </div>
+                            <p class="text-gray-300 text-xs">D&E 유닛 항상 응원해! ODE 엔터테인먼트 사장님들 꽃길만 걷자!</p>
+                        </div>
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5">
+                            <div class="flex items-center justify-between mb-1">
+                                <span class="font-bold text-sapphire-300 text-xs">보석미남은혁</span>
+                                <span class="text-[10px] text-gray-500">2분 전</span>
+                            </div>
+                            <p class="text-gray-300 text-xs">슈퍼쇼 무대 연출까지 천재인 혁재 오빠!! 늘 고마워요!</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Virtual Cheering Lightstick Interactive Element -->
+            <div class="mt-16 flex flex-col items-center">
+                <p class="text-xs text-gray-500 mb-4 uppercase tracking-widest">Click below to activate virtual Super Wand</p>
+                <button onclick="clickLightstick()" class="group relative w-24 h-24 rounded-full bg-sapphire-950/80 hover:bg-sapphire-900 border-2 border-sapphire-500/60 flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 glow-sapphire">
+                    <svg class="w-12 h-12 text-sapphire-400 group-hover:text-sapphire-300 transition-colors" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="50" cy="40" r="22" stroke="currentColor" stroke-width="4" fill="rgba(0,63,219,0.2)" />
+                        <line x1="50" y1="62" x2="50" y2="90" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
+                        <polygon points="50,28 54,38 64,38 56,44 59,54 50,48 41,54 44,44 36,38 46,38" fill="currentColor" />
+                    </svg>
+                    <span class="absolute inset-0 rounded-full border border-sapphire-400 opacity-0 group-hover:animate-ping"></span>
+                </button>
+                <span class="text-sm font-bold text-sapphire-300 mt-4 text-glow-sapphire">빛나라! 슈퍼 라이트스틱</span>
+                <span class="text-xs text-gray-500 mt-1">누적 흔들기: <span id="cheerCount" class="font-bold text-sapphire-400">1,986,404</span>회</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-950 border-t border-white/10 py-12 relative z-10 text-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <span class="text-2xl font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-sapphire-300 to-sapphire-400 text-glow-sapphire mb-4 block">EUNHYUK</span>
+            <p class="text-gray-500 text-xs sm:text-sm">
+                이 페이지는 슈퍼주니어 은혁과 D&E의 팬인 ELF(엘프)에 의해 제작된 비공식 아카이브 팬페이지입니다.<br>
+                © 2026 EUNHYUK Archive. All Rights Reserved.
+            </p>
+            
+            <div class="flex justify-center space-x-6 mt-6 text-gray-400">
+                <a href="https://www.instagram.com/eunhyukee44" target="_blank" class="hover:text-sapphire-400 transition-colors text-lg"><i class="fab fa-instagram"></i></a>
+                <a href="https://www.youtube.com/@SuperJuniorDNE" target="_blank" class="hover:text-sapphire-400 transition-colors text-lg"><i class="fab fa-youtube"></i></a>
+                <a href="https://twitter.com/SJofficial" target="_blank" class="hover:text-sapphire-400 transition-colors text-lg"><i class="fab fa-twitter"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts & API Connectors -->
+    <script>
+        // --- MOBILE MENU TOGGLE ---
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        function toggleMenu() {
+            mobileMenu.classList.toggle('hidden');
+        }
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', toggleMenu);
+        }
+
+        // --- PROFILE TABS LOGIC ---
+        function switchProfileTab(tabId) {
+            const tabs = ['basic', 'nick', 'talent'];
+            
+            tabs.forEach(item => {
+                const btn = document.getElementById(`tabBtn-${item}`);
+                const content = document.getElementById(`tabContent-${item}`);
+                
+                if (btn && content) {
+                    if (item === tabId) {
+                        btn.className = "flex items-center justify-between p-3 rounded-xl bg-sapphire-900/40 border border-sapphire-700/50 text-white text-sm font-semibold transition-all";
+                        content.classList.remove('hidden-tab');
+                    } else {
+                        btn.className = "flex items-center justify-between p-3 rounded-xl hover:bg-sapphire-950/30 border border-white/5 text-gray-400 text-sm transition-all";
+                        content.classList.add('hidden-tab');
+                    }
+                }
+            });
+        }
+
+        // --- DIRECT OUTBOUND VIDEO LINK NAVIGATOR ---
+        function openVideo(url) {
+            window.open(url, '_blank');
+        }
+
+        // --- INTERACTIVE SAPPHIRE BACKGROUND CANVAS ---
+        const canvas = document.getElementById('sapphireCanvas');
+        const ctx = canvas ? canvas.getContext('2d') : null;
+        
+        let stars = [];
+        let mouseX = 0;
+        let mouseY = 0;
+
+        function resizeCanvas() {
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class SapphireStar {
+            constructor(x, y) {
+                this.x = x || (canvas ? Math.random() * canvas.width : 0);
+                this.y = y || (canvas ? Math.random() * canvas.height : 0);
+                this.size = Math.random() * 2 + 1;
+                this.speedX = Math.random() * 0.4 - 0.2;
+                this.speedY = Math.random() * -0.6 - 0.2; // Slowly drift up
+                this.opacity = Math.random() * 0.8 + 0.2;
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                
+                if (canvas && (this.y < 0 || this.opacity <= 0)) {
+                    this.y = canvas.height;
+                    this.x = Math.random() * canvas.width;
+                    this.opacity = Math.random() * 0.8 + 0.2;
+                }
+            }
+
+            draw() {
+                if (!ctx) return;
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = '#7cb1ff';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#0c5cff';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initStars() {
+            stars = [];
+            for (let i = 0; i < 60; i++) {
+                stars.push(new SapphireStar());
+            }
+        }
+        initStars();
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            
+            if (Math.random() < 0.15) {
+                const sparkle = new SapphireStar(mouseX, mouseY);
+                sparkle.speedY = Math.random() * -1 - 0.5;
+                sparkle.speedX = Math.random() * 2 - 1;
+                stars.push(sparkle);
+                if (stars.length > 100) {
+                    stars.shift();
+                }
+            }
+        });
+
+        function animateBackground() {
+            if (ctx && canvas) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                stars.forEach(star => {
+                    star.update();
+                    star.draw();
+                });
+            }
+            requestAnimationFrame(animateBackground);
+        }
+        
+        window.onload = function() {
+            animateBackground();
+        };
+
+        // --- CHEERING MESSAGE INTERACTION ---
+        function addCheerMessage() {
+            const nameInput = document.getElementById('cheerName');
+            const messageInput = document.getElementById('cheerMessage');
+            
+            if (!nameInput || !messageInput) return;
+
+            const name = nameInput.value.trim() || "익명의 엘프";
+            const message = messageInput.value.trim();
+            
+            if (!message) {
+                alertBox("응원 메시지를 입력해 주세요!");
+                return;
+            }
+
+            const feed = document.getElementById('cheerFeed');
+            if (feed) {
+                const newCheer = document.createElement('div');
+                newCheer.className = "bg-sapphire-950/50 p-3 rounded-xl border border-sapphire-500/30 transform transition-all duration-300 scale-95 opacity-0";
+                newCheer.innerHTML = `
+                    <div class="flex items-center justify-between mb-1">
+                        <span class="font-bold text-sapphire-300 text-xs">${name}</span>
+                        <span class="text-[10px] text-sapphire-400">방금 전</span>
+                    </div>
+                    <p class="text-white text-xs">${message}</p>
+                `;
+                
+                feed.insertBefore(newCheer, feed.firstChild);
+                
+                setTimeout(() => {
+                    newCheer.classList.remove('scale-95', 'opacity-0');
+                    newCheer.classList.add('scale-100', 'opacity-100');
+                }, 50);
+            }
+
+            nameInput.value = "";
+            messageInput.value = "";
+            triggerBurstSparkles();
+        }
+
+        // --- VIRTUAL LIGHTSTICK CHEERING CLICK ---
+        let count = 1986404;
+        function clickLightstick() {
+            count++;
+            const cheerCount = document.getElementById('cheerCount');
+            if (cheerCount) {
+                cheerCount.textContent = count.toLocaleString();
+            }
+            triggerBurstSparkles();
+        }
+
+        function triggerBurstSparkles() {
+            const burstX = window.innerWidth / 2;
+            const burstY = window.innerHeight * 0.8;
+            for (let i = 0; i < 20; i++) {
+                const sp = new SapphireStar(burstX + (Math.random() * 100 - 50), burstY + (Math.random() * 100 - 50));
+                sp.speedY = Math.random() * -6 - 2;
+                sp.speedX = Math.random() * 8 - 4;
+                sp.size = Math.random() * 3 + 2;
+                stars.push(sp);
+            }
+        }
+
+        function alertBox(text) {
+            const msgBox = document.createElement('div');
+            msgBox.className = "fixed bottom-10 left-1/2 transform -translate-x-1/2 bg-sapphire-900 border border-sapphire-500 text-white font-semibold text-xs py-3 px-6 rounded-full shadow-2xl z-50 transition-all duration-300 opacity-0 scale-90";
+            msgBox.textContent = text;
+            document.body.appendChild(msgBox);
+            
+            setTimeout(() => {
+                msgBox.classList.remove('opacity-0', 'scale-90');
+                msgBox.classList.add('opacity-100', 'scale-100');
+            }, 50);
+
+            setTimeout(() => {
+                msgBox.classList.remove('opacity-100', 'scale-100');
+                msgBox.classList.add('opacity-0', 'scale-90');
+                setTimeout(() => {
+                    msgBox.remove();
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
