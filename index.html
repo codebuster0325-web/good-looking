@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AURA: Premium Visual Archive</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display (Serif), Inter (Sans-serif), Syne (Trendy Accent) -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        onyx: '#0A0A0C',
+                        charcoal: '#121216',
+                        luxuryGold: '#C5A880',
+                        warmIvory: '#FDFBF7',
+                        platinum: '#E5E5E5',
+                        champagne: '#EADBC8'
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['Inter', 'Pretendard', 'sans-serif'],
+                        accent: ['Syne', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', 'Pretendard', sans-serif;
+            background-color: #0A0A0C;
+            color: #E5E5E5;
+            overflow-x: hidden;
+        }
+        .serif-font {
+            font-family: 'Playfair Display', serif;
+        }
+        .accent-font {
+            font-family: 'Syne', sans-serif;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0A0C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #C5A880;
+            border-radius: 3px;
+        }
+        /* Premium Glassmorphism */
+        .glass-card {
+            background: rgba(18, 18, 22, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(197, 168, 128, 0.15);
+        }
+        .glass-nav {
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(197, 168, 128, 0.1);
+        }
+        /* Card Vignette & Zoom */
+        .vignette-hover {
+            position: relative;
+            overflow: hidden;
+        }
+        .vignette-hover::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(10,10,12,0.95) 0%, rgba(10,10,12,0.4) 40%, rgba(10,10,12,0) 100%);
+            transition: all 0.5s ease;
+        }
+        .vignette-hover:hover::after {
+            background: linear-gradient(to top, rgba(10,10,12,0.98) 0%, rgba(10,10,12,0.2) 60%, rgba(10,10,12,0) 100%);
+        }
+    </style>
+</head>
+<body class="selection:bg-luxuryGold selection:text-onyx">
+
+    <!-- Navigation Bar -->
+    <nav class="glass-nav fixed top-0 left-0 w-full z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center space-x-3 group">
+                <span class="accent-font text-2xl font-extrabold tracking-widest text-luxuryGold group-hover:text-warmIvory transition-colors">AURA</span>
+                <span class="h-4 w-[1px] bg-luxuryGold/30"></span>
+                <span class="serif-font text-xs tracking-[0.3em] uppercase text-platinum/70">My Muse Archive</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-10 text-xs tracking-[0.2em] uppercase font-medium">
+                <button onclick="switchTab('gallery')" class="nav-link text-luxuryGold border-b border-luxuryGold pb-1 transition-all duration-300" id="nav-gallery">Archive</button>
+                <button onclick="switchTab('worldcup')" class="nav-link text-platinum/60 hover:text-luxuryGold pb-1 transition-all duration-300" id="nav-worldcup">Ideal Cup</button>
+                <button onclick="switchTab('quiz')" class="nav-link text-platinum/60 hover:text-luxuryGold pb-1 transition-all duration-300" id="nav-quiz">Aura Quiz</button>
+                <button onclick="switchTab('add')" class="nav-link text-platinum/60 hover:text-luxuryGold pb-1 transition-all duration-300" id="nav-add">Submit</button>
+            </div>
+            <div>
+                <button onclick="switchTab('add')" class="hidden sm:inline-block px-5 py-2.5 rounded-full border border-luxuryGold/40 text-xs tracking-wider text-luxuryGold uppercase hover:bg-luxuryGold hover:text-onyx transition-all duration-500">
+                    <i class="fa-solid fa-plus mr-1.5"></i> Add My Bias
+                </button>
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden text-luxuryGold focus:outline-none ml-4">
+                    <i class="fa-solid fa-bars text-xl" id="menu-icon"></i>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile Dropdown Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-onyx border-b border-luxuryGold/10 px-6 py-6 space-y-4 text-center">
+            <button onclick="switchTab('gallery'); toggleMobileMenu();" class="block w-full text-sm py-2 tracking-widest uppercase text-luxuryGold font-semibold">Archive</button>
+            <button onclick="switchTab('worldcup'); toggleMobileMenu();" class="block w-full text-sm py-2 tracking-widest uppercase text-platinum/70 hover:text-luxuryGold">Ideal Cup</button>
+            <button onclick="switchTab('quiz'); toggleMobileMenu();" class="block w-full text-sm py-2 tracking-widest uppercase text-platinum/70 hover:text-luxuryGold">Aura Quiz</button>
+            <button onclick="switchTab('add'); toggleMobileMenu();" class="block w-full text-sm py-2 tracking-widest uppercase text-platinum/70 hover:text-luxuryGold">Submit New</button>
+        </div>
+    </nav>
+
+    <!-- Top Spacer -->
+    <div class="h-20"></div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="min-h-screen">
+
+        <!-- TAB 1: GALLERY & HERO -->
+        <section id="tab-gallery" class="tab-content transition-all duration-500 opacity-100 block">
+            <!-- Hero Section -->
+            <div class="relative py-20 px-6 overflow-hidden">
+                <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-luxuryGold/5 rounded-full blur-[120px] pointer-events-none"></div>
+                <div class="max-w-5xl mx-auto text-center relative z-10">
+                    <span class="serif-font text-luxuryGold tracking-[0.4em] uppercase text-xs sm:text-sm font-semibold mb-4 inline-block animate-pulse-slow">The Aesthetic Masterpieces</span>
+                    <h1 class="serif-font text-4xl sm:text-6xl md:text-7xl font-extralight text-warmIvory tracking-tight mb-6 leading-none">
+                        AURA <span class="italic font-serif font-light text-luxuryGold">Collection</span>
+                    </h1>
+                    <p class="max-w-2xl mx-auto text-platinum/60 text-sm sm:text-base font-light leading-relaxed mb-10">
+                        내가 사랑하는 가장 완벽한 피사체들의 기록. 깊은 눈빛과 조각 같은 선, 당신이 기획하는 단 하나뿐인 프리미엄 아날로그 비주얼 매거진 아카이브.
+                    </p>
+                    
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-3 max-w-lg mx-auto bg-charcoal/40 border border-luxuryGold/10 rounded-2xl p-4 divide-x divide-luxuryGold/10 text-center glass-card">
+                        <div>
+                            <span class="block accent-font text-xl sm:text-2xl font-bold text-luxuryGold" id="stats-total">0</span>
+                            <span class="text-[10px] tracking-widest uppercase text-platinum/50">MUSE ARTIFACTS</span>
+                        </div>
+                        <div>
+                            <span class="block accent-font text-xl sm:text-2xl font-bold text-luxuryGold" id="stats-hearts">0</span>
+                            <span class="text-[10px] tracking-widest uppercase text-platinum/50">HEARTS POURED</span>
+                        </div>
+                        <div>
+                            <span class="block accent-font text-xl sm:text-2xl font-bold text-luxuryGold" id="stats-categories">0</span>
+                            <span class="text-[10px] tracking-widest uppercase text-platinum/50">CATEGORIES</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Gallery Section -->
+            <div class="max-w-7xl mx-auto px-6 pb-24">
+                <!-- Dynamic Category Filter Container -->
+                <div class="flex flex-wrap items-center justify-center gap-2 mb-12" id="category-filter-container">
+                    <!-- Loaded Dynamically via JS -->
+                </div>
+
+                <!-- Gallery Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8" id="gallery-grid">
+                    <!-- Cards are dynamically injected here -->
+                </div>
+
+                <!-- Empty State for Gallery -->
+                <div id="gallery-empty-state" class="hidden text-center py-20 glass-card rounded-3xl border border-luxuryGold/10 max-w-lg mx-auto">
+                    <i class="fa-solid fa-folder-open text-luxuryGold/40 text-5xl mb-4"></i>
+                    <h3 class="serif-font text-xl text-warmIvory mb-2">아카이브가 완전히 비어 있습니다</h3>
+                    <p class="text-xs text-platinum/50 mb-6">나만의 미남 뮤즈를 추가하여 당신만의 특별한 비주얼 에디션을 디자인해보세요.</p>
+                    <button onclick="switchTab('add')" class="px-6 py-3 rounded-full bg-luxuryGold text-onyx font-semibold text-xs tracking-widest uppercase hover:bg-warmIvory transition-all duration-300">첫 최애 추가하기</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: IDEAL TYPE WORLD CUP -->
+        <section id="tab-worldcup" class="tab-content transition-all duration-500 opacity-0 hidden py-12 px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <span class="serif-font text-luxuryGold tracking-[0.4em] uppercase text-xs font-semibold mb-3 inline-block">The Ultimate Selection</span>
+                <h2 class="serif-font text-4xl sm:text-5xl font-extralight text-warmIvory tracking-tight mb-4">
+                    이상형 <span class="italic font-serif font-light text-luxuryGold">월드컵</span>
+                </h2>
+                <p class="text-platinum/60 text-xs sm:text-sm font-light max-w-lg mx-auto mb-10">
+                    심장을 멎게 만드는 절정의 비주얼 토너먼트! 직접 등록한 매혹적인 뮤즈 중에서 단 한 명의 최애를 찾아냅니다.
+                </p>
+
+                <!-- Tournament Setup Area -->
+                <div id="worldcup-setup" class="glass-card max-w-md mx-auto rounded-3xl p-8 border border-luxuryGold/10">
+                    <i class="fa-solid fa-trophy text-luxuryGold/60 text-4xl mb-4 animate-bounce"></i>
+                    <h3 class="serif-font text-xl text-warmIvory mb-6">토너먼트 라운드 선택</h3>
+                    
+                    <div id="wc-selection-zone">
+                        <!-- Generates Dynamically based on Item Counts in JS -->
+                    </div>
+                </div>
+
+                <!-- Game Play Area (Hidden by default) -->
+                <div id="worldcup-arena" class="hidden">
+                    <div class="mb-8 max-w-2xl mx-auto flex items-center justify-between text-xs tracking-wider uppercase text-platinum/50">
+                        <span id="wc-round-title" class="text-luxuryGold font-semibold">ROUND OF 4</span>
+                        <div class="h-1 bg-charcoal border border-luxuryGold/5 w-1/2 rounded-full overflow-hidden">
+                            <div id="wc-progress-bar" class="h-full bg-luxuryGold transition-all duration-500" style="width: 25%"></div>
+                        </div>
+                        <span id="wc-match-info">MATCH 1/2</span>
+                    </div>
+
+                    <!-- VS Battle Arena Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center justify-center relative max-w-3xl mx-auto">
+                        <!-- VS Badge -->
+                        <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 bg-onyx border-2 border-luxuryGold text-luxuryGold font-extrabold text-sm w-12 h-12 rounded-full flex items-center justify-center tracking-widest shadow-lg shadow-onyx accent-font">VS</div>
+
+                        <!-- Card Left -->
+                        <div onclick="selectWinner(0)" id="wc-card-left" class="group cursor-pointer glass-card rounded-2xl overflow-hidden border border-luxuryGold/15 hover:border-luxuryGold transition-all duration-300 relative aspect-[3/4] flex flex-col justify-end p-6 select-none shadow-2xl">
+                            <img id="wc-img-left" src="" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Left Candidate">
+                            <div class="absolute inset-0 bg-gradient-to-t from-onyx via-onyx/40 to-transparent z-10"></div>
+                            <div class="relative z-10 text-left">
+                                <span id="wc-badge-left" class="px-2.5 py-1 text-[9px] font-semibold tracking-widest text-luxuryGold border border-luxuryGold/30 bg-onyx/80 rounded-full inline-block mb-3 uppercase">Chic</span>
+                                <h4 id="wc-name-left" class="serif-font text-2xl sm:text-3xl font-light text-warmIvory mb-1">성민</h4>
+                                <p id="wc-hashtag-left" class="text-xs text-platinum/60">#슬림 #날카로운콧대</p>
+                            </div>
+                        </div>
+
+                        <!-- Card Right -->
+                        <div onclick="selectWinner(1)" id="wc-card-right" class="group cursor-pointer glass-card rounded-2xl overflow-hidden border border-luxuryGold/15 hover:border-luxuryGold transition-all duration-300 relative aspect-[3/4] flex flex-col justify-end p-6 select-none shadow-2xl">
+                            <img id="wc-img-right" src="" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Right Candidate">
+                            <div class="absolute inset-0 bg-gradient-to-t from-onyx via-onyx/40 to-transparent z-10"></div>
+                            <div class="relative z-10 text-left">
+                                <span id="wc-badge-right" class="px-2.5 py-1 text-[9px] font-semibold tracking-widest text-luxuryGold border border-luxuryGold/30 bg-onyx/80 rounded-full inline-block mb-3 uppercase">Warm</span>
+                                <h4 id="wc-name-right" class="serif-font text-2xl sm:text-3xl font-light text-warmIvory mb-1">재혁</h4>
+                                <p id="wc-hashtag-right" class="text-xs text-platinum/60">#대형견미 #부드러운눈빛</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Winner Section (Hidden by default) -->
+                <div id="worldcup-winner" class="hidden max-w-md mx-auto">
+                    <span class="accent-font text-luxuryGold tracking-[0.4em] uppercase text-xs font-bold mb-4 inline-block">THE SUPREME CHAMPION</span>
+                    <div class="relative rounded-3xl overflow-hidden border-2 border-luxuryGold shadow-2xl aspect-[3/4] p-8 flex flex-col justify-end text-left mb-8" id="winner-card">
+                        <img id="winner-img" src="" class="absolute inset-0 w-full h-full object-cover" alt="Ultimate Winner">
+                        <div class="absolute inset-0 bg-gradient-to-t from-onyx via-onyx/30 to-transparent z-10"></div>
+                        <div class="relative z-10">
+                            <span id="winner-badge" class="px-3 py-1 text-[10px] font-bold tracking-widest text-onyx bg-luxuryGold rounded-full inline-block mb-3 uppercase">Ethereal</span>
+                            <h3 id="winner-name" class="serif-font text-4xl font-extralight text-warmIvory mb-2">하람</h3>
+                            <p id="winner-hashtag" class="text-xs text-platinum/70 mb-4">#조각같은외모 #몽환적매력</p>
+                            <div class="flex items-center space-x-2 text-xs text-luxuryGold font-medium">
+                                <i class="fa-solid fa-crown text-sm animate-bounce"></i>
+                                <span>오늘 당신의 심장이 인정한 원픽</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-4 justify-center">
+                        <button onclick="resetWorldCup()" class="px-6 py-3 rounded-full bg-luxuryGold text-onyx font-semibold text-xs tracking-wider uppercase hover:bg-warmIvory transition-all duration-300">다시 하기</button>
+                        <button onclick="switchTab('gallery')" class="px-6 py-3 rounded-full border border-luxuryGold/20 text-luxuryGold font-semibold text-xs tracking-wider uppercase hover:bg-luxuryGold/5 transition-all duration-300">아카이브 보기</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 3: VISUAL QUIZ (MATCHMAKER) -->
+        <section id="tab-quiz" class="tab-content transition-all duration-500 opacity-0 hidden py-12 px-6">
+            <div class="max-w-xl mx-auto">
+                <div class="text-center mb-10">
+                    <span class="serif-font text-luxuryGold tracking-[0.4em] uppercase text-xs font-semibold mb-3 inline-block">Aura Matchmaker</span>
+                    <h2 class="serif-font text-4xl font-extralight text-warmIvory tracking-tight mb-4">
+                        비주얼 <span class="italic font-serif font-light text-luxuryGold">취향 테스트</span>
+                    </h2>
+                    <p class="text-platinum/60 text-xs sm:text-sm font-light">
+                        당신의 내면이 가장 끌리는 미남의 분위기를 몇 가지 예술적인 가치 선호를 통해 완벽 매칭 분석합니다.
+                    </p>
+                </div>
+
+                <!-- Quiz Card Container -->
+                <div class="glass-card rounded-3xl p-8 border border-luxuryGold/10 min-h-[400px] flex flex-col justify-between relative overflow-hidden">
+                    <div class="absolute top-0 left-0 w-full h-[3px] bg-charcoal">
+                        <div id="quiz-progress-line" class="h-full bg-luxuryGold transition-all duration-500" style="width: 20%"></div>
+                    </div>
+
+                    <!-- Intro Screen -->
+                    <div id="quiz-intro" class="text-center my-auto">
+                        <i class="fa-solid fa-sparkles text-luxuryGold/60 text-4xl mb-6 animate-pulse"></i>
+                        <h3 class="serif-font text-xl text-warmIvory mb-3">빛나는 5개의 감각을 바탕으로</h3>
+                        <p class="text-xs text-platinum/50 max-w-sm mx-auto mb-8">당신의 잠재적 로맨티시즘과 시각적 조화성을 분석합니다. 과연 당신의 소울 비주얼은?</p>
+                        <button onclick="startQuiz()" class="px-8 py-3.5 rounded-full bg-luxuryGold text-onyx font-semibold text-xs tracking-widest uppercase hover:bg-warmIvory transition-all duration-300">테스트 시작하기</button>
+                    </div>
+
+                    <!-- Question Play Screen -->
+                    <div id="quiz-play" class="hidden my-auto space-y-6">
+                        <div class="flex items-center justify-between text-[11px] uppercase tracking-widest text-platinum/50">
+                            <span>Question <span id="quiz-q-num">1</span> of 5</span>
+                            <span class="text-luxuryGold">Aesthetic Selection</span>
+                        </div>
+                        <h3 id="quiz-question-text" class="serif-font text-lg sm:text-xl text-warmIvory font-light leading-snug">첫눈에 반하는 얼굴, 눈빛의 형태는?</h3>
+                        
+                        <div class="space-y-3 pt-4">
+                            <button onclick="answerQuiz(0)" id="quiz-btn-0" class="w-full text-left p-4 rounded-xl border border-luxuryGold/15 hover:border-luxuryGold bg-charcoal/30 hover:bg-luxuryGold/5 transition-all duration-300 text-xs sm:text-sm flex items-center justify-between group">
+                                <span id="quiz-text-0">서늘하지만 깊고 날카로운 눈매</span>
+                                <i class="fa-solid fa-chevron-right text-luxuryGold opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </button>
+                            <button onclick="answerQuiz(1)" id="quiz-btn-1" class="w-full text-left p-4 rounded-xl border border-luxuryGold/15 hover:border-luxuryGold bg-charcoal/30 hover:bg-luxuryGold/5 transition-all duration-300 text-xs sm:text-sm flex items-center justify-between group">
+                                <span id="quiz-text-1">다정하고 따스해 웃을 때 선해지는 눈매</span>
+                                <i class="fa-solid fa-chevron-right text-luxuryGold opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Result Screen -->
+                    <div id="quiz-result" class="hidden text-center my-auto">
+                        <span class="text-[10px] tracking-widest uppercase text-luxuryGold font-semibold mb-2 inline-block">YOUR VISUAL DESTINY</span>
+                        <h3 id="quiz-result-title" class="serif-font text-3xl font-extralight text-warmIvory mb-4">냉미남 에디터블 아우라</h3>
+                        
+                        <!-- Recommended Card -->
+                        <div class="glass-card max-w-xs mx-auto rounded-2xl overflow-hidden border border-luxuryGold/20 mb-6 relative aspect-[3.5/4] flex flex-col justify-end p-5 text-left">
+                            <img id="quiz-rec-img" src="" class="absolute inset-0 w-full h-full object-cover" alt="Recommendation">
+                            <div class="absolute inset-0 bg-gradient-to-t from-onyx via-onyx/40 to-transparent z-10"></div>
+                            <div class="relative z-10">
+                                <span id="quiz-rec-badge" class="px-2 py-0.5 text-[8px] font-bold tracking-widest bg-luxuryGold text-onyx rounded-full inline-block mb-1.5 uppercase">Chic</span>
+                                <h4 id="quiz-rec-name" class="serif-font text-xl text-warmIvory font-semibold">서준</h4>
+                                <p id="quiz-rec-hashtag" class="text-[10px] text-platinum/70">#서늘함 #도시적</p>
+                            </div>
+                        </div>
+
+                        <p id="quiz-result-desc" class="text-xs text-platinum/60 max-w-sm mx-auto mb-6 leading-relaxed">
+                            당신은 감성보다 이성, 보편적 따뜻함보다 은은하고 시크한 고급스러움에 강하게 이끌립니다.
+                        </p>
+
+                        <div class="flex space-x-3 justify-center">
+                            <button onclick="resetQuiz()" class="px-5 py-2.5 rounded-full bg-luxuryGold text-onyx font-semibold text-xs tracking-wider uppercase hover:bg-warmIvory transition-all duration-300">다시 테스트</button>
+                            <button id="quiz-match-btn" onclick="openDetailModal()" class="px-5 py-2.5 rounded-full border border-luxuryGold/20 text-luxuryGold font-semibold text-xs tracking-wider uppercase hover:bg-luxuryGold/5 transition-all duration-300">프로필 디테일</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: ADD BIAS (SUBMIT) -->
+        <section id="tab-add" class="tab-content transition-all duration-500 opacity-0 hidden py-12 px-6">
+            <div class="max-w-2xl mx-auto">
+                <div class="text-center mb-10">
+                    <span class="serif-font text-luxuryGold tracking-[0.4em] uppercase text-xs font-semibold mb-3 inline-block">Curate the Masterpiece</span>
+                    <h2 class="serif-font text-4xl font-extralight text-warmIvory tracking-tight mb-4">
+                        나만의 최애 <span class="italic font-serif font-light text-luxuryGold">추가하기</span>
+                    </h2>
+                    <p class="text-platinum/60 text-xs sm:text-sm font-light max-w-md mx-auto">
+                        자신만이 알고 있거나 자랑하고 싶은 미남의 상세 매력 포인트와 무드를 원하는 디자인 스펙 그대로 커스텀 기획해보세요.
+                    </p>
+                </div>
+
+                <!-- Submission Form Card -->
+                <form id="add-bias-form" onsubmit="handleFormSubmit(event)" class="glass-card rounded-3xl p-8 border border-luxuryGold/15 space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Input Name -->
+                        <div>
+                            <label class="block text-xs font-semibold tracking-widest text-luxuryGold uppercase mb-2">이름 (Name) *</label>
+                            <input type="text" id="input-name" required placeholder="예: 차은우, 황민현, 로운 등" class="w-full bg-charcoal/60 border border-luxuryGold/15 rounded-xl px-4 py-3 text-sm focus:border-luxuryGold focus:outline-none focus:ring-1 focus:ring-luxuryGold text-warmIvory transition-all">
+                        </div>
+                        <!-- Input Category -->
+                        <div>
+                            <label class="block text-xs font-semibold tracking-widest text-luxuryGold uppercase mb-2">아우라 카테고리 (Aura Category) *</label>
+                            <input type="text" id="input-category" required placeholder="예: 냉미남, 청량하이틴, 퇴폐미 (자유롭게 입력)" class="w-full bg-charcoal/60 border border-luxuryGold/15 rounded-xl px-4 py-3 text-sm focus:border-luxuryGold focus:outline-none focus:ring-1 focus:ring-luxuryGold text-warmIvory transition-all">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <!-- Input Specs Height -->
+                        <div>
+                            <label class="block text-xs font-semibold tracking-widest text-luxuryGold uppercase mb-2">키/신장 (Height)</label>
+                            <input type="text" id="input-height" placeholder="예: 183cm" class="w-full bg-charcoal/60 border border-luxuryGold/15 rounded-xl px-4 py-3 text-sm focus:border-luxuryGold focus:outline-none focus:ring-1 focus:ring-luxuryGold text-warmIvory transition-all">
+                        </div>
+                        <!-- Input Specs Eye -->
+                        <div>
+                            <label class="block text-xs font-semibold tracking-widest text-luxuryGold uppercase mb-2">시그니처 매력 포인트 (Attraction Point) *</label>
+                            <input type="text" id="input-point" required placeholder="예: 무쌍, 높은 콧대, 깊은 눈빛" class="w-full bg-charcoal/60 border border-luxuryGold/15 rounded-xl px-4 py-3 text-sm focus:border-luxuryGold focus:outline-none focus:ring-1 focus:ring-luxuryGold text-warmIvory transition-all">
+                        </div>
+                    </div>
+
+                    <!-- Input Image URL -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label class="block text-xs font-semibold tracking-widest text-luxuryGold uppercase">이미지 주소 (Image URL) *</label>
+                            <button type="button" onclick="loadRandomImg()" class="text-[11px] text-luxuryGold hover:text-warmIvory transition-colors"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i> 랜덤 고화질 추천 초상 이미지 넣기</button>
+                        </div>
+                        <input type="url" id="input-img" required placeholder="https://example.com/portrait.jpg" class="w-full bg-charcoal/60 border border-luxuryGold/15 rounded-xl px-4 py-3 text-sm focus:border-luxuryGold focus:outline-none focus:ring-1 focus:ring-luxuryGold text-warmIvory transition-all">
+                        <span class="text-[10px] text-platinum/40 mt-1 block">※ 웹상의 가로보다 세로가 긴(Portrait) 초고화질 인물 이미지 링크를 권장합니다.</span>
+                    </div>
+
+                    <!-- Input Hashtags -->
+                    <div>
+                        <label class="block text-xs font-semibold tracking-widest text-luxuryGold uppercase mb-2">태그 키워드 (Hashtags)</label>
+                        <input type="text" id="input-tags" placeholder="예: #슬림 #퇴폐적인매력 #고고한 (띄어쓰기로 구분)" class="w-full bg-charcoal/60 border border-luxuryGold/15 rounded-xl px-4 py-3 text-sm focus:border-luxuryGold focus:outline-none focus:ring-1 focus:ring-luxuryGold text-warmIvory transition-all">
+                    </div>
+
+                    <!-- Input Description -->
+                    <div>
+                        <label class="block text-xs font-semibold tracking-widest text-luxuryGold uppercase mb-2">입덕 서사 / 매거진 수록 소개 글귀 *</label>
+                        <textarea id="input-desc" required rows="4" placeholder="성격, 입덕 계기, 또는 당신을 사로잡았던 순간들을 패션 잡지의 에디토리얼 소개글처럼 수려하게 기재해 주세요." class="w-full bg-charcoal/60 border border-luxuryGold/15 rounded-xl px-4 py-3 text-sm focus:border-luxuryGold focus:outline-none focus:ring-1 focus:ring-luxuryGold text-warmIvory transition-all"></textarea>
+                    </div>
+
+                    <!-- Message Indicator Box -->
+                    <div id="add-success-msg" class="hidden p-4 rounded-xl border border-emerald-500/20 bg-emerald-500/5 text-emerald-400 text-xs text-center">
+                        <i class="fa-solid fa-circle-check mr-1.5"></i> 새로운 최애 뮤즈가 성공적으로 아카이브에 편입되었습니다!
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-2">
+                        <button type="submit" class="w-full py-4 rounded-xl bg-luxuryGold text-onyx font-bold text-xs tracking-[0.2em] uppercase hover:bg-warmIvory hover:shadow-xl hover:shadow-luxuryGold/5 transition-all duration-300">
+                            ARCHIVE MY MUSE
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- INTERACTIVE PROFILE MODAL DIALOG -->
+    <div id="detail-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-onyx/95 backdrop-blur-md hidden transition-all duration-300">
+        <div class="relative w-full max-w-4xl glass-card rounded-3xl overflow-hidden shadow-2xl border border-luxuryGold/20 grid grid-cols-1 md:grid-cols-12 max-h-[90vh] md:max-h-[80vh]">
+            
+            <!-- Close Button -->
+            <button onclick="closeDetailModal()" class="absolute top-5 right-5 z-40 bg-onyx/80 border border-luxuryGold/20 hover:border-luxuryGold text-luxuryGold w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Left Visual Area -->
+            <div class="md:col-span-5 relative h-64 md:h-full overflow-hidden">
+                <img id="modal-img" src="" class="absolute inset-0 w-full h-full object-cover" alt="Detail Portrait">
+                <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-onyx via-transparent to-transparent"></div>
+            </div>
+
+            <!-- Right Profile Content Area -->
+            <div class="md:col-span-7 p-6 sm:p-10 overflow-y-auto flex flex-col justify-between">
+                <div>
+                    <!-- Badge & Likes -->
+                    <div class="flex items-center justify-between mb-4">
+                        <span id="modal-badge" class="px-3 py-1 text-[10px] font-bold tracking-widest text-onyx bg-luxuryGold rounded-full uppercase">CHIC</span>
+                        <button id="modal-like-btn" onclick="modalLikeHandler()" class="text-xs text-rose-500 border border-rose-500/20 bg-rose-500/5 hover:bg-rose-500/10 px-3 py-1 rounded-full transition-all flex items-center space-x-1.5">
+                            <i class="fa-solid fa-heart animate-pulse"></i>
+                            <span id="modal-like-count">0</span>
+                        </button>
+                    </div>
+
+                    <!-- Name -->
+                    <h2 id="modal-name" class="serif-font text-3xl sm:text-5xl font-extralight text-warmIvory tracking-tight mb-2">이름</h2>
+                    <p id="modal-tags" class="text-xs text-luxuryGold mb-6 italic">#태그</p>
+
+                    <!-- Spec Sheet -->
+                    <div class="grid grid-cols-2 gap-4 border-t border-b border-luxuryGold/10 py-4 mb-6 text-xs sm:text-sm">
+                        <div>
+                            <span class="block text-[10px] tracking-widest text-platinum/40 uppercase mb-1">HEIGHT SPEC</span>
+                            <span id="modal-height" class="font-medium text-warmIvory">-</span>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] tracking-widest text-platinum/40 uppercase mb-1">ATTRACTION POINT</span>
+                            <span id="modal-attraction" class="font-medium text-warmIvory">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Story Content -->
+                    <div class="space-y-4">
+                        <span class="block text-[10px] tracking-widest text-platinum/40 uppercase">MUSE STORY</span>
+                        <p id="modal-desc" class="text-xs sm:text-sm text-platinum/70 leading-relaxed font-light whitespace-pre-line">
+                            서사 내용
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer Cheer Feature -->
+                <div class="mt-8 pt-6 border-t border-luxuryGold/10 flex items-center space-x-3">
+                    <input type="text" id="cheer-input" placeholder="최애에게 남길 응원의 한 마디..." class="flex-1 bg-charcoal/60 border border-luxuryGold/15 rounded-xl px-4 py-2.5 text-xs text-warmIvory focus:border-luxuryGold focus:outline-none">
+                    <button onclick="submitCheer()" class="px-5 py-2.5 rounded-xl bg-luxuryGold text-onyx font-bold text-xs tracking-wider uppercase hover:bg-warmIvory transition-all">Cheer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="bg-charcoal border-t border-luxuryGold/10 py-16 px-6 text-center">
+        <div class="max-w-7xl mx-auto space-y-6">
+            <span class="accent-font text-xl font-extrabold tracking-widest text-luxuryGold">AURA</span>
+            <p class="text-xs text-platinum/40 max-w-sm mx-auto leading-relaxed">
+                AURA Visual Archive is a curated celebration of elegance, proportions, and pure aesthetic brilliance. All curated profiles are designed for appreciation purposes.
+            </p>
+            <div class="flex items-center justify-center space-x-6 text-xs text-platinum/40">
+                <a href="#" class="hover:text-luxuryGold transition-colors">Curator Profile</a>
+                <span>•</span>
+                <a href="#" class="hover:text-luxuryGold transition-colors">Terms of Aesthetic</a>
+                <span>•</span>
+                <a href="#" class="hover:text-luxuryGold transition-colors">Privacy Policy</a>
+            </div>
+            <p class="text-[10px] text-platinum/30">&copy; 2026 AURA Studio. Designed for true connoisseurs of beauty.</p>
+        </div>
+    </footer>
+
+    <script>
+        // GLOBAL DATA STATE (Predefined default array is completely wiped for user curation)
+        let activeTab = 'gallery';
+        let currentFilter = 'all';
+        let items = [];
+
+        const defaultEunhyuk = {
+            id: 1718812345678,
+            name: "은혁 (Eunhyuk)",
+            category: "무대 위 아우라",
+            height: "176cm",
+            point: "독보적인 춤선과 날카로운 페이스 라인",
+            img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoRwhGeeTTYIHoudn6dpqbatkppbSndNcQ0zTwgr5hvpPh5mVQrOZaEHU&s=10",
+            tags: "#슈퍼주니어 #메인댄서 #무대천재 #샤프한턱선",
+            desc: "슈퍼주니어의 독보적인 메인 댄서이자 무대 위의 영원한 주인공.\n가장 정교하고 감각적인 춤선으로 시선을 압도하며, 날렵한 페이스 라인과 깊이 있는 매혹적 눈빛으로 시크하고 세련된 존재감을 발산합니다. 오직 그에게서만 느낄 수 있는 은빛 카리스마 아우라입니다.",
+            likes: 425,
+            comments: []
+        };
+
+        // LOCAL STORAGE LOAD
+        if(localStorage.getItem('aura_items')) {
+            try {
+                items = JSON.parse(localStorage.getItem('aura_items'));
+                // 만약 이전에 비어 있는 로컬스토리지 상태였다면 은혁 데이터를 세팅합니다.
+                if (items.length === 0) {
+                    items = [defaultEunhyuk];
+                    localStorage.setItem('aura_items', JSON.stringify(items));
+                }
+            } catch (e) {
+                console.error("Local storage corruption, loading default list.");
+                items = [defaultEunhyuk];
+            }
+        } else {
+            items = [defaultEunhyuk];
+            localStorage.setItem('aura_items', JSON.stringify(items));
+        }
+
+        // TAB SWITCHING SYSTEM
+        function switchTab(tabName) {
+            activeTab = tabName;
+            
+            // Toggle Content Visibility
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.add('hidden', 'opacity-0');
+                el.classList.remove('block', 'opacity-100');
+            });
+            
+            const target = document.getElementById(`tab-${tabName}`);
+            target.classList.remove('hidden');
+            setTimeout(() => {
+                target.classList.add('block', 'opacity-100');
+                target.classList.remove('opacity-0');
+            }, 50);
+
+            // Update Nav Highlighting
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                btn.classList.remove('text-luxuryGold', 'border-b', 'border-luxuryGold');
+                btn.classList.add('text-platinum/60');
+            });
+            const activeNav = document.getElementById(`nav-${tabName}`);
+            if(activeNav) {
+                activeNav.classList.add('text-luxuryGold', 'border-b', 'border-luxuryGold');
+                activeNav.classList.remove('text-platinum/60');
+            }
+
+            // Custom resets/initializers when changing tabs
+            if (tabName === 'gallery') {
+                renderFilters();
+                renderGallery();
+                updateStats();
+            } else if (tabName === 'worldcup') {
+                resetWorldCup();
+            } else if (tabName === 'quiz') {
+                resetQuiz();
+            }
+        }
+
+        // INTERACTIVE MOBILE MENU
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            if(menu.classList.contains('hidden')) {
+                menu.classList.remove('hidden');
+                icon.className = "fa-solid fa-xmark text-xl";
+            } else {
+                menu.classList.add('hidden');
+                icon.className = "fa-solid fa-bars text-xl";
+            }
+        }
+
+        // UPDATE ARCHIVE STATISTICS
+        function updateStats() {
+            document.getElementById('stats-total').innerText = items.length;
+            const totalHearts = items.reduce((sum, item) => sum + (item.likes || 0), 0);
+            document.getElementById('stats-hearts').innerText = totalHearts.toLocaleString();
+
+            const uniqueCategories = [...new Set(items.map(item => item.category.trim().toLowerCase()))].filter(Boolean);
+            document.getElementById('stats-categories').innerText = uniqueCategories.length;
+        }
+
+        // RENDER DYNAMIC CATEGORY FILTERS
+        function renderFilters() {
+            const container = document.getElementById('category-filter-container');
+            if (!container) return;
+
+            if (items.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            // Collect Unique Categories
+            const categories = [...new Set(items.map(i => i.category.trim()))].filter(Boolean);
+
+            let filterHtml = `
+                <button onclick="filterGallery('all')" class="filter-btn px-6 py-2 rounded-full border border-luxuryGold/20 text-xs tracking-wider uppercase ${currentFilter === 'all' ? 'bg-luxuryGold text-onyx font-semibold' : 'text-platinum/70 hover:border-luxuryGold/40'} transition-all duration-300" data-filter="all">All Aura</button>
+            `;
+
+            categories.forEach(cat => {
+                const isActive = currentFilter === cat;
+                filterHtml += `
+                    <button onclick="filterGallery('${cat}')" class="filter-btn px-6 py-2 rounded-full border border-luxuryGold/20 text-xs tracking-wider uppercase ${isActive ? 'bg-luxuryGold text-onyx font-semibold' : 'text-platinum/70 hover:border-luxuryGold/40'} transition-all duration-300" data-filter="${cat}">${cat}</button>
+                `;
+            });
+
+            container.innerHTML = filterHtml;
+        }
+
+        // RENDER ARCHIVE CARDS (GALLERY)
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            const emptyState = document.getElementById('gallery-empty-state');
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                emptyState.classList.remove('hidden');
+                grid.classList.add('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+                grid.classList.remove('hidden');
+            }
+
+            let filtered = items;
+            if(currentFilter !== 'all') {
+                filtered = items.filter(i => i.category.trim().toLowerCase() === currentFilter.trim().toLowerCase());
+            }
+
+            // If a filter is selected but no items match (e.g. because category was deleted), reset filter to all
+            if (filtered.length === 0 && currentFilter !== 'all') {
+                currentFilter = 'all';
+                filtered = items;
+                renderFilters();
+            }
+
+            filtered.forEach(item => {
+                const firstTag = item.tags ? (item.tags.split(' ')[0] || '#비주얼') : '#비주얼';
+
+                const cardHtml = `
+                    <div class="group relative rounded-2xl overflow-hidden glass-card border border-luxuryGold/10 hover:border-luxuryGold/40 transition-all duration-500 flex flex-col justify-end aspect-[3/4.2] vignette-hover cursor-pointer" onclick="openDetailModal(${item.id})">
+                        <!-- Image with subtle pan/zoom effect -->
+                        <img src="${item.img}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2000ms]" alt="${item.name}" onerror="this.onerror=null; this.src='https://placehold.co/400x530/121216/C5A880?text=${encodeURIComponent(item.name)}';">
+                        
+                        <!-- Content container -->
+                        <div class="relative z-10 p-5 w-full text-left">
+                            <span class="px-2.5 py-0.5 text-[8px] font-semibold tracking-widest text-luxuryGold border border-luxuryGold/20 bg-onyx/85 rounded-full inline-block mb-2.5 uppercase">${item.category}</span>
+                            <h3 class="serif-font text-2xl font-light text-warmIvory tracking-tight mb-1 group-hover:text-luxuryGold transition-colors">${item.name}</h3>
+                            <p class="text-xs text-platinum/50 line-clamp-1 mb-3">${firstTag} • ${item.point}</p>
+                            
+                            <!-- Bottom Reveal details on hover -->
+                            <div class="h-0 opacity-0 group-hover:h-6 group-hover:opacity-100 transition-all duration-300 flex items-center justify-between text-[11px] text-luxuryGold border-t border-luxuryGold/10 pt-2">
+                                <span>MAGAZINE PROFILE</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.insertAdjacentHTML('beforeend', cardHtml);
+            });
+        }
+
+        // FILTER GALLERY CATEGORY
+        function filterGallery(category) {
+            currentFilter = category;
+            
+            // Adjust active state button styling
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-luxuryGold', 'text-onyx', 'font-semibold');
+                btn.classList.add('text-platinum/70', 'border-luxuryGold/10');
+            });
+            const selectedBtn = document.querySelector(`.filter-btn[data-filter="${category}"]`);
+            if(selectedBtn) {
+                selectedBtn.classList.add('bg-luxuryGold', 'text-onyx', 'font-semibold');
+                selectedBtn.classList.remove('text-platinum/70', 'border-luxuryGold/10');
+            }
+
+            renderGallery();
+        }
+
+        // PRESET POOL IMAGES FOR FALLBACKS OR RECOMMENDATIONS
+        const poolImgs = [
+            'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=600',
+            'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=600',
+            'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&q=80&w=600',
+            'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=600',
+            'https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=600',
+            'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=600',
+            'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&q=80&w=600',
+            'https://images.unsplash.com/photo-1513956589380-bad6acb9b9d4?auto=format&fit=crop&q=80&w=600'
+        ];
+        function loadRandomImg() {
+            const rand = poolImgs[Math.floor(Math.random() * poolImgs.length)];
+            document.getElementById('input-img').value = rand;
+        }
+
+        // SUBMIT NEW BIAS FORM
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const name = document.getElementById('input-name').value;
+            const category = document.getElementById('input-category').value.trim();
+            const height = document.getElementById('input-height').value || '비밀';
+            const point = document.getElementById('input-point').value || '전부 매력적';
+            const img = document.getElementById('input-img').value;
+            const tags = document.getElementById('input-tags').value || '#새로운뮤즈';
+            const desc = document.getElementById('input-desc').value;
+
+            const newItem = {
+                id: Date.now(),
+                name,
+                category,
+                height,
+                point,
+                img,
+                tags,
+                desc,
+                likes: 0,
+                comments: []
+            };
+
+            items.unshift(newItem); // Add to beginning
+            localStorage.setItem('aura_items', JSON.stringify(items));
+
+            // Show success message
+            const successMsg = document.getElementById('add-success-msg');
+            successMsg.classList.remove('hidden');
+            setTimeout(() => {
+                successMsg.classList.add('hidden');
+                document.getElementById('add-bias-form').reset();
+                switchTab('gallery');
+            }, 1500);
+        }
+
+        // ==========================================
+        // TOURNAMENT: IDEAL TYPE WORLD CUP
+        // ==========================================
+        let wcCandidates = [];
+        let wcCurrentRound = [];
+        let wcNextRound = [];
+        let wcIndex = 0;
+        let wcSize = 4;
+
+        function startTournament(size) {
+            wcSize = size;
+            let pool = [...items];
+            
+            // Validate pool capability
+            if(pool.length < size) {
+                return; // Guard rail
+            }
+
+            // Shuffle Pool
+            wcCandidates = pool.sort(() => 0.5 - Math.random()).slice(0, size);
+            wcCurrentRound = [...wcCandidates];
+            wcNextRound = [];
+            wcIndex = 0;
+
+            document.getElementById('worldcup-setup').classList.add('hidden');
+            document.getElementById('worldcup-winner').classList.add('hidden');
+            
+            const arena = document.getElementById('worldcup-arena');
+            arena.classList.remove('hidden');
+
+            renderWCMatch();
+        }
+
+        function renderWCMatch() {
+            const leftObj = wcCurrentRound[wcIndex];
+            const rightObj = wcCurrentRound[wcIndex + 1];
+
+            // Setup round header label
+            let roundLabel = "8강";
+            if(wcCurrentRound.length === 4) roundLabel = "4강 (Semi-Finals)";
+            if(wcCurrentRound.length === 2) roundLabel = "결승전 (Grand Finals)";
+            document.getElementById('wc-round-title').innerText = roundLabel;
+
+            // Setup current match details
+            const totalMatches = wcCurrentRound.length / 2;
+            const currentMatchNum = (wcIndex / 2) + 1;
+            document.getElementById('wc-match-info').innerText = `Match ${currentMatchNum}/${totalMatches}`;
+
+            // Set progress bar width
+            const progressPct = ((currentMatchNum - 1) / totalMatches) * 100;
+            document.getElementById('wc-progress-bar').style.width = `${progressPct}%`;
+
+            // Card left details
+            document.getElementById('wc-img-left').src = leftObj.img;
+            document.getElementById('wc-name-left').innerText = leftObj.name;
+            document.getElementById('wc-hashtag-left').innerText = leftObj.tags ? leftObj.tags.split(' ').slice(0, 2).join(' ') : '#뮤즈';
+            document.getElementById('wc-badge-left').innerText = leftObj.category;
+
+            // Card right details
+            document.getElementById('wc-img-right').src = rightObj.img;
+            document.getElementById('wc-name-right').innerText = rightObj.name;
+            document.getElementById('wc-hashtag-right').innerText = rightObj.tags ? rightObj.tags.split(' ').slice(0, 2).join(' ') : '#뮤즈';
+            document.getElementById('wc-badge-right').innerText = rightObj.category;
+        }
+
+        function selectWinner(side) {
+            const winner = (side === 0) ? wcCurrentRound[wcIndex] : wcCurrentRound[wcIndex + 1];
+            wcNextRound.push(winner);
+
+            wcIndex += 2;
+
+            if (wcIndex >= wcCurrentRound.length) {
+                // Round complete
+                if (wcNextRound.length === 1) {
+                    // Winner found!
+                    announceWinner(wcNextRound[0]);
+                } else {
+                    // Go to next round
+                    wcCurrentRound = [...wcNextRound];
+                    wcNextRound = [];
+                    wcIndex = 0;
+                    renderWCMatch();
+                }
+            } else {
+                renderWCMatch();
+            }
+        }
+
+        function announceWinner(winnerObj) {
+            document.getElementById('worldcup-arena').classList.add('hidden');
+            const winnerArea = document.getElementById('worldcup-winner');
+            winnerArea.classList.remove('hidden');
+
+            document.getElementById('winner-img').src = winnerObj.img;
+            document.getElementById('winner-name').innerText = winnerObj.name;
+            document.getElementById('winner-hashtag').innerText = winnerObj.tags || '';
+            document.getElementById('winner-badge').innerText = winnerObj.category.toUpperCase();
+
+            // Fire glamorous gold & white confetti for ultimate celebration
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#C5A880', '#FDFBF7', '#0A0A0C']
+            });
+        }
+
+        function resetWorldCup() {
+            document.getElementById('worldcup-setup').classList.remove('hidden');
+            document.getElementById('worldcup-arena').classList.add('hidden');
+            document.getElementById('worldcup-winner').classList.add('hidden');
+            
+            const selectionZone = document.getElementById('wc-selection-zone');
+
+            if (items.length < 4) {
+                // Not enough items message
+                selectionZone.innerHTML = `
+                    <div class="py-6 text-center">
+                        <p class="text-sm text-platinum/60 mb-6 leading-relaxed">
+                            토너먼트를 플레이하려면 아카이브에 최소 <span class="text-luxuryGold font-bold">4명 이상의 뮤즈</span>가 등록되어 있어야 합니다.<br>
+                            (현재 등록 인원: <span class="text-luxuryGold font-bold">${items.length}</span>명)
+                        </p>
+                        <button onclick="switchTab('add')" class="w-full py-4 rounded-xl bg-luxuryGold text-onyx font-bold text-xs tracking-wider uppercase hover:bg-warmIvory transition-all">
+                            최애 등록하러 가기
+                        </button>
+                    </div>
+                `;
+            } else {
+                let layout = `
+                    <div class="grid grid-cols-2 gap-4">
+                        <button onclick="startTournament(4)" class="py-4 rounded-xl border border-luxuryGold/20 hover:border-luxuryGold hover:bg-luxuryGold/5 transition-all text-sm font-medium">
+                            4강 매치 <span class="block text-xs text-luxuryGold mt-1">Semi-Finals</span>
+                        </button>
+                `;
+
+                if (items.length >= 8) {
+                    layout += `
+                        <button onclick="startTournament(8)" class="py-4 rounded-xl border border-luxuryGold/20 hover:border-luxuryGold hover:bg-luxuryGold/5 transition-all text-sm font-medium">
+                            8강 매치 <span class="block text-xs text-luxuryGold mt-1">Quarter-Finals</span>
+                        </button>
+                    `;
+                } else {
+                    layout += `
+                        <button class="py-4 rounded-xl border border-luxuryGold/10 opacity-30 cursor-not-allowed text-sm font-medium text-platinum/40" title="8강을 즐기시려면 뮤즈를 8명 이상 등록해주세요.">
+                            8강 매치 <span class="block text-xs text-platinum/30 mt-1">(8명 필요)</span>
+                        </button>
+                    `;
+                }
+
+                layout += `</div>`;
+                selectionZone.innerHTML = layout;
+            }
+        }
+
+
+        // ==========================================
+        // QUIZ: VISUAL MATCHMAKER
+        // ==========================================
+        let quizIdx = 0;
+        let quizScore = { chic: 0, warm: 0, ethereal: 0, rebel: 0 };
+        const quizQuestions = [
+            {
+                q: "소설 속 첫등장 시, 당신의 심장을 관통할 최애의 시그니처 대사는?",
+                options: [
+                    { text: "어슬렁대지 말고 비켜라, 눈에 밟히는 거 거슬리니까.", type: "chic" },
+                    { text: "오늘 많이 힘들었지? 괜찮아, 이제 내가 같이 있을게.", type: "warm" }
+                ]
+            },
+            {
+                q: "최애가 화보에서 입을 옷 중 가장 완벽하게 어울릴 무드의 의상은?",
+                options: [
+                    { text: "시스루 레이스 셔츠와 밤하늘처럼 은은한 주얼리 컬렉션", type: "ethereal" },
+                    { text: "단추 풀린 올블랙 가죽 자켓과 메탈 실버 초커", type: "rebel" }
+                ]
+            },
+            {
+                q: "최애가 당신을 은밀하게 바라보는 매혹적인 눈빛의 형태는?",
+                options: [
+                    { text: "오직 세속에서 벗어난 듯, 아련함만을 간직한 별빛 같은 눈동자", type: "ethereal" },
+                    { text: "서늘하지만 뒤돌아서면 피식 무심하게 웃어주는 장난기 섞인 눈꼬리", type: "chic" }
+                ]
+            },
+            {
+                q: "이상적으로 꿈꾸는 깊은 밤의 정취 및 로맨틱 플레이스는?",
+                options: [
+                    { text: "비 내리는 저녁, 은은한 선율과 담배 연기가 어우러진 듯한 재즈 바", type: "rebel" },
+                    { text: "햇볕이 가득 들어와 평화롭고 향기로운 화실의 오후", type: "warm" }
+                ]
+            },
+            {
+                q: "그의 목덜미와 셔츠 깃에서 흘러나오는 가장 극적인 잔향 계열은?",
+                options: [
+                    { text: "알싸하고 묵직한 가죽과 타바코, 매혹적이고 딥한 우디 머스크", type: "rebel" },
+                    { text: "정갈하게 다려진 리넨 화이트 셔츠 특유의 깨끗하고 보송보송한 비누향", type: "warm" }
+                ]
+            }
+        ];
+
+        function startQuiz() {
+            if (items.length === 0) {
+                const introZone = document.getElementById('quiz-intro');
+                introZone.innerHTML = `
+                    <i class="fa-solid fa-triangle-exclamation text-luxuryGold/40 text-4xl mb-6"></i>
+                    <h3 class="serif-font text-xl text-warmIvory mb-3">등록된 뮤즈가 없습니다</h3>
+                    <p class="text-xs text-platinum/50 max-w-sm mx-auto mb-8">취향분석 매칭을 해드릴 미남 아카이브가 비어 있습니다. 아키텍처 구성을 위해 첫 뮤즈를 등록해주세요!</p>
+                    <button onclick="switchTab('add')" class="px-8 py-3.5 rounded-full bg-luxuryGold text-onyx font-semibold text-xs tracking-widest uppercase hover:bg-warmIvory transition-all duration-300">최애 등록하러 가기</button>
+                `;
+                return;
+            }
+
+            quizIdx = 0;
+            quizScore = { chic: 0, warm: 0, ethereal: 0, rebel: 0 };
+            document.getElementById('quiz-intro').classList.add('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-play').classList.remove('hidden');
+            renderQuizQuestion();
+        }
+
+        function renderQuizQuestion() {
+            const qObj = quizQuestions[quizIdx];
+            document.getElementById('quiz-q-num').innerText = quizIdx + 1;
+            document.getElementById('quiz-question-text').innerText = qObj.q;
+
+            // Set progress bar
+            const pct = ((quizIdx + 1) / quizQuestions.length) * 100;
+            document.getElementById('quiz-progress-line').style.width = `${pct}%`;
+
+            document.getElementById('quiz-text-0').innerText = qObj.options[0].text;
+            document.getElementById('quiz-text-1').innerText = qObj.options[1].text;
+        }
+
+        function answerQuiz(optionIdx) {
+            const selectedType = quizQuestions[quizIdx].options[optionIdx].type;
+            quizScore[selectedType]++;
+
+            quizIdx++;
+            if(quizIdx >= quizQuestions.length) {
+                calcQuizResult();
+            } else {
+                renderQuizQuestion();
+            }
+        }
+
+        // DYNAMIC MATCHER SYSTEM FOR USER-CUSTOMIZED CATEGORIES
+        function getDynamicRecommendation(highestScoreType) {
+            const mappings = {
+                chic: ['냉', '시크', 'chic', '도시', '차갑', '도도', '얼음'],
+                warm: ['온', '따뜻', 'warm', '다정', '햇살', '멍', '부드러'],
+                ethereal: ['판타지', '몽환', 'ethereal', 'cg', '천사', '얼굴천재', '우주'],
+                rebel: ['퇴폐', 'rebel', '섹시', '나쁜', '치명', '강렬', '밤']
+            };
+
+            const keywords = mappings[highestScoreType];
+
+            // 1. First priority: search items whose category or tags contain mapped keywords
+            let match = items.find(item => {
+                const categoryLower = item.category.toLowerCase();
+                const tagsLower = (item.tags || '').toLowerCase();
+                return keywords.some(kw => categoryLower.includes(kw) || tagsLower.includes(kw));
+            });
+
+            // 2. Second priority: exact match on category name
+            if (!match) {
+                match = items.find(item => item.category.toLowerCase() === highestScoreType);
+            }
+
+            // 3. Fallback: if absolutely nothing matches, return the latest added item
+            if (!match) {
+                match = items[0];
+            }
+
+            return match;
+        }
+
+        function calcQuizResult() {
+            document.getElementById('quiz-play').classList.add('hidden');
+            const resultArea = document.getElementById('quiz-result');
+            resultArea.classList.remove('hidden');
+
+            // Find highest scored category
+            let highestCat = 'chic';
+            let maxVal = -1;
+            for(let key in quizScore) {
+                if(quizScore[key] > maxVal) {
+                    maxVal = quizScore[key];
+                    highestCat = key;
+                }
+            }
+
+            const match = getDynamicRecommendation(highestCat);
+
+            let typeName = "눈부신 시크 아우라 감상자";
+            let descText = "당신은 세련되고 서늘한 느낌, 도도하고 정돈된 냉미남적 분위기에 강렬하게 끌립니다. 무표정 속에 숨어 있는 반전의 부드러움에 매력을 느끼는 로맨티시스트입니다.";
+
+            if(highestCat === 'warm') {
+                typeName = "따스한 햇살 온미남 콜렉터";
+                descText = "당신은 다정하고 나를 보듬어줄 것 같은 멍뭉이 비주얼이나 온화하고 단정한 아우라에서 영혼의 설렘을 얻습니다. 편안한 눈웃음이 어울리는 상대에게 무장해제 되는 타입입니다.";
+            } else if(highestCat === 'ethereal') {
+                typeName = "초현실주의 판타지 비주얼 마니아";
+                descText = "당신은 명화 속에서 튀어나온 듯 좌우 밸런스가 압도적이거나, 현실에 없을 것 같은 신성하고 몽환적인 입체감에 매료됩니다. 차원을 허무는 예술적인 형태에 심장이 요동칩니다.";
+            } else if(highestCat === 'rebel') {
+                typeName = "나른하고 치명적인 퇴폐미 마니아";
+                descText = "당신은 아련함과 고독함, 정형화되지 않은 우수에 찬 매혹에 깊이 이끌립니다. 자유분방하고 예술적인 감수성 뒤에 쓸쓸함과 치명적인 흡입력을 동반한 피사체에 무력해지는 편입니다.";
+            }
+
+            document.getElementById('quiz-result-title').innerText = typeName;
+            document.getElementById('quiz-result-desc').innerText = descText;
+
+            // Display recommended target card inside quiz result
+            document.getElementById('quiz-rec-img').src = match.img;
+            document.getElementById('quiz-rec-name').innerText = match.name;
+            document.getElementById('quiz-rec-hashtag').innerText = match.tags ? match.tags.split(' ').slice(0, 2).join(' ') : '#비주얼';
+            document.getElementById('quiz-rec-badge').innerText = match.category.toUpperCase();
+
+            // Set button action to open this card's detail
+            document.getElementById('quiz-match-btn').setAttribute('onclick', `openDetailModal(${match.id})`);
+        }
+
+        function resetQuiz() {
+            const introZone = document.getElementById('quiz-intro');
+            introZone.innerHTML = `
+                <i class="fa-solid fa-sparkles text-luxuryGold/60 text-4xl mb-6 animate-pulse"></i>
+                <h3 class="serif-font text-xl text-warmIvory mb-3">빛나는 5개의 감각을 바탕으로</h3>
+                <p class="text-xs text-platinum/50 max-w-sm mx-auto mb-8">당신의 잠재적 로맨티시즘과 시각적 조화성을 분석합니다. 과연 당신의 소울 비주얼은?</p>
+                <button onclick="startQuiz()" class="px-8 py-3.5 rounded-full bg-luxuryGold text-onyx font-semibold text-xs tracking-widest uppercase hover:bg-warmIvory transition-all duration-300">테스트 시작하기</button>
+            `;
+            document.getElementById('quiz-intro').classList.remove('hidden');
+            document.getElementById('quiz-play').classList.add('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-progress-line').style.width = `0%`;
+        }
+
+
+        // ==========================================
+        // PROFILE DETAIL MODAL SYSTEM & LIKES
+        // ==========================================
+        let currentModalItemId = null;
+
+        function openDetailModal(id) {
+            // 은혁(Eunhyuk) 카드의 고유 ID(1718812345678)일 경우 지정된 페이지로 이동시킵니다.
+            if (id === 1718812345678) {
+                window.location.href = './01/index.html';
+                return;
+            }
+
+            currentModalItemId = id;
+            const item = items.find(i => i.id === id);
+            if(!item) return;
+
+            document.getElementById('modal-img').src = item.img;
+            document.getElementById('modal-name').innerText = item.name;
+            document.getElementById('modal-tags').innerText = item.tags || '';
+            document.getElementById('modal-height').innerText = item.height || '기재 없음';
+            document.getElementById('modal-attraction').innerText = item.point;
+            document.getElementById('modal-desc').innerText = item.desc;
+            document.getElementById('modal-like-count').innerText = item.likes || 0;
+            
+            let badgeName = item.category.toUpperCase();
+            document.getElementById('modal-badge').innerText = badgeName;
+
+            const modal = document.getElementById('detail-modal');
+            modal.classList.remove('hidden');
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('hidden');
+            document.getElementById('cheer-input').value = '';
+        }
+
+        function modalLikeHandler() {
+            if(!currentModalItemId) return;
+            const item = items.find(i => i.id === currentModalItemId);
+            if(!item) return;
+
+            item.likes = (item.likes || 0) + 1;
+            document.getElementById('modal-like-count').innerText = item.likes;
+
+            // Heart Burst Effect on click
+            confetti({
+                particleCount: 20,
+                angle: 60,
+                spread: 55,
+                origin: { x: 0.7, y: 0.5 }
+            });
+
+            localStorage.setItem('aura_items', JSON.stringify(items));
+            updateStats();
+        }
+
+        function submitCheer() {
+            const input = document.getElementById('cheer-input');
+            const txt = input.value.trim();
+            if(!txt) return;
+
+            input.value = '';
+            
+            // Elegant micro success response instead of alert
+            confetti({
+                particleCount: 15,
+                scalar: 1.2,
+                angle: 120,
+                spread: 45,
+                origin: { y: 0.8 }
+            });
+
+            const sendBtn = document.querySelector('#detail-modal button[onclick="submitCheer()"]');
+            const originalText = sendBtn.innerText;
+            sendBtn.innerText = "Sent!";
+            sendBtn.classList.add('bg-warmIvory');
+            setTimeout(() => {
+                sendBtn.innerText = originalText;
+                sendBtn.classList.remove('bg-warmIvory');
+            }, 1000);
+        }
+
+        // INITIAL ONLOAD EXECUTIONS
+        window.onload = function() {
+            renderFilters();
+            renderGallery();
+            updateStats();
+        };
+    </script>
+</body>
+</html>
